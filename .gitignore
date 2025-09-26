@@ -1,7 +1,19 @@
+# dependencias
 node_modules/
+
+# compilados
 dist/
 frontend/dist/
 api/dist/
+*.js.map
+*.d.ts
+
+# entornos
 .env
+.env.*
+!.env.example
+
+# IDE y sistema
 .vscode/
 .DS_Store
+Thumbs.db
