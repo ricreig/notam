@@ -40,7 +40,7 @@ function resolveStatus(sectionE: string, startAt: string | null, endAt: string |
       return 'EXPIRED';
     }
   }
-  return 'INFO';
+  return 'INFO' as NotamStatus;
 }
 
 export function parseNotam(raw: string): ParsedNotam {

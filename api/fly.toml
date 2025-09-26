@@ -1,0 +1,25 @@
+# fly.toml app configuration file generated for notam-api-ctareig on 2025-09-25T19:44:27-07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'notam-api-ctareig'
+primary_region = 'sjc'
+
+[build]
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[deploy]
+  release_command = "node dist/scripts/migrate.js && node dist/scripts/seed.js"
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
