@@ -51,12 +51,13 @@ export default function GlobeView() {
   }
 
   return (
-    <div className="h-[420px] overflow-hidden rounded-xl border border-slate-800 shadow-lg shadow-slate-900/40">
+    <div className="relative h-[520px] overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/60 shadow-xl shadow-slate-950/40">
       <Map
         mapboxAccessToken={token}
         mapStyle="mapbox://styles/mapbox/dark-v11"
         {...viewState}
         onMove={(evt) => setViewState(evt.viewState)}
+        style={{ width: '100%', height: '100%' }}
       >
         <Source id="airports" type="geojson" data={geojson}>
           <Layer
