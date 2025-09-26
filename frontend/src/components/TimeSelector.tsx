@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { useDashboardStore } from '../store/useDashboardStore';
 import { clsx } from 'clsx';
 
@@ -8,6 +9,12 @@ const modes: { value: 'absolute' | 'relative' | 'daily'; label: string }[] = [
 ];
 
 export default function TimeSelector() {
+  const componentId = useId();
+  const absoluteFromId = `${componentId}-absolute-from`;
+  const absoluteToId = `${componentId}-absolute-to`;
+  const relativeRangeId = `${componentId}-relative-range`;
+  const dailyStartId = `${componentId}-daily-start`;
+  const dailyEndId = `${componentId}-daily-end`;
   const view = useDashboardStore((state) => state.view);
   const refreshNotams = useDashboardStore((state) => state.refreshNotams);
   const setTimeMode = useDashboardStore((state) => state.setTimeMode);
@@ -39,7 +46,7 @@ export default function TimeSelector() {
   };
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-200">
+    <div className="flex h-full flex-col gap-2 rounded-lg border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-200">
       <div className="flex items-center gap-1 text-xs uppercase tracking-wide text-slate-400">Time Selector</div>
       <div className="flex gap-2">
         {modes.map((mode) => (
@@ -57,18 +64,20 @@ export default function TimeSelector() {
       </div>
       {view.timeMode === 'absolute' && (
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <label className="space-y-1">
+          <label className="space-y-1" htmlFor={absoluteFromId}>
             <span className="text-slate-400">From</span>
             <input
+              id={absoluteFromId}
               type="datetime-local"
               value={view.absoluteRange.from ?? ''}
               onChange={(event) => handleAbsoluteChange('from', event.target.value)}
               className="w-full rounded border border-slate-700 bg-slate-800 px-2 py-1 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </label>
-          <label className="space-y-1">
+          <label className="space-y-1" htmlFor={absoluteToId}>
             <span className="text-slate-400">To</span>
             <input
+              id={absoluteToId}
               type="datetime-local"
               value={view.absoluteRange.to ?? ''}
               onChange={(event) => handleAbsoluteChange('to', event.target.value)}
@@ -79,8 +88,11 @@ export default function TimeSelector() {
       )}
       {view.timeMode === 'relative' && (
         <div className="flex items-center gap-2 text-xs">
-          <span className="text-slate-400">Hours</span>
+          <label htmlFor={relativeRangeId} className="text-slate-400">
+            Hours
+          </label>
           <input
+            id={relativeRangeId}
             type="range"
             min={1}
             max={72}
@@ -93,18 +105,20 @@ export default function TimeSelector() {
       )}
       {view.timeMode === 'daily' && (
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <label className="space-y-1">
+          <label className="space-y-1" htmlFor={dailyStartId}>
             <span className="text-slate-400">Start</span>
             <input
+              id={dailyStartId}
               type="time"
               value={view.dailyWindow.start}
               onChange={(event) => handleDailyChange('start', event.target.value)}
               className="w-full rounded border border-slate-700 bg-slate-800 px-2 py-1 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </label>
-          <label className="space-y-1">
+          <label className="space-y-1" htmlFor={dailyEndId}>
             <span className="text-slate-400">End</span>
             <input
+              id={dailyEndId}
               type="time"
               value={view.dailyWindow.end}
               onChange={(event) => handleDailyChange('end', event.target.value)}

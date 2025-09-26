@@ -35,7 +35,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
       <TopBar />
-      <main className="mx-auto max-w-7xl space-y-8 px-6 py-10">
+      <main className="mx-auto max-w-7xl space-y-8 px-6 py-12">
         {loading && <p className="text-sm text-slate-400">Loading...</p>}
         {!airports.length && !loading ? (
           <EmptyState />

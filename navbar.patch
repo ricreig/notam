@@ -1,0 +1,359 @@
+diff --git a/frontend/src/App.tsx b/frontend/src/App.tsx
+index fce6327..6f1950e 100644
+--- a/frontend/src/App.tsx
++++ b/frontend/src/App.tsx
+@@ -35,7 +35,7 @@ export default function App() {
+   return (
+     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+       <TopBar />
+-      <main className="mx-auto max-w-7xl space-y-8 px-6 py-10">
++      <main className="mx-auto max-w-7xl space-y-8 px-6 py-12">
+         {loading && <p className="text-sm text-slate-400">Loading...</p>}
+         {!airports.length && !loading ? (
+           <EmptyState />
+diff --git a/frontend/src/components/GlobeView.tsx b/frontend/src/components/GlobeView.tsx
+index 2a2cba2..17d052e 100644
+--- a/frontend/src/components/GlobeView.tsx
++++ b/frontend/src/components/GlobeView.tsx
+@@ -51,12 +51,13 @@ export default function GlobeView() {
+   }
+
+   return (
+-    <div className="h-[420px] overflow-hidden rounded-xl border border-slate-800 shadow-lg shadow-slate-900/40">
++    <div className="relative h-[520px] overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/60 shadow-xl shadow-slate-950/40">
+       <Map
+         mapboxAccessToken={token}
+         mapStyle="mapbox://styles/mapbox/dark-v11"
+         {...viewState}
+         onMove={(evt) => setViewState(evt.viewState)}
++        style={{ width: '100%', height: '100%' }}
+       >
+         <Source id="airports" type="geojson" data={geojson}>
+           <Layer
+diff --git a/frontend/src/components/TimeSelector.tsx b/frontend/src/components/TimeSelector.tsx
+index 38c69bd..f49ac7f 100644
+--- a/frontend/src/components/TimeSelector.tsx
++++ b/frontend/src/components/TimeSelector.tsx
+@@ -1,3 +1,4 @@
++import { useId } from 'react';
+ import { useDashboardStore } from '../store/useDashboardStore';
+ import { clsx } from 'clsx';
+
+@@ -8,6 +9,12 @@ const modes: { value: 'absolute' | 'relative' | 'daily'; label: string }[] = [
+ ];
+
+ export default function TimeSelector() {
++  const componentId = useId();
++  const absoluteFromId = `${componentId}-absolute-from`;
++  const absoluteToId = `${componentId}-absolute-to`;
++  const relativeRangeId = `${componentId}-relative-range`;
++  const dailyStartId = `${componentId}-daily-start`;
++  const dailyEndId = `${componentId}-daily-end`;
+   const view = useDashboardStore((state) => state.view);
+   const refreshNotams = useDashboardStore((state) => state.refreshNotams);
+   const setTimeMode = useDashboardStore((state) => state.setTimeMode);
+@@ -39,7 +46,7 @@ export default function TimeSelector() {
+   };
+
+   return (
+-    <div className="flex flex-col gap-2 rounded-lg border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-200">
++    <div className="flex h-full flex-col gap-2 rounded-lg border border-slate-800 bg-slate-900/80 px-4 py-3 text-sm text-slate-200">
+       <div className="flex items-center gap-1 text-xs uppercase tracking-wide text-slate-400">Time Selector</div>
+       <div className="flex gap-2">
+         {modes.map((mode) => (
+@@ -57,18 +64,20 @@ export default function TimeSelector() {
+       </div>
+       {view.timeMode === 'absolute' && (
+         <div className="grid grid-cols-2 gap-2 text-xs">
+-          <label className="space-y-1">
++          <label className="space-y-1" htmlFor={absoluteFromId}>
+             <span className="text-slate-400">From</span>
+             <input
++              id={absoluteFromId}
+               type="datetime-local"
+               value={view.absoluteRange.from ?? ''}
+               onChange={(event) => handleAbsoluteChange('from', event.target.value)}
+               className="w-full rounded border border-slate-700 bg-slate-800 px-2 py-1 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+             />
+           </label>
+-          <label className="space-y-1">
++          <label className="space-y-1" htmlFor={absoluteToId}>
+             <span className="text-slate-400">To</span>
+             <input
++              id={absoluteToId}
+               type="datetime-local"
+               value={view.absoluteRange.to ?? ''}
+               onChange={(event) => handleAbsoluteChange('to', event.target.value)}
+@@ -79,8 +88,11 @@ export default function TimeSelector() {
+       )}
+       {view.timeMode === 'relative' && (
+         <div className="flex items-center gap-2 text-xs">
+-          <span className="text-slate-400">Hours</span>
++          <label htmlFor={relativeRangeId} className="text-slate-400">
++            Hours
++          </label>
+           <input
++            id={relativeRangeId}
+             type="range"
+             min={1}
+             max={72}
+@@ -93,18 +105,20 @@ export default function TimeSelector() {
+       )}
+       {view.timeMode === 'daily' && (
+         <div className="grid grid-cols-2 gap-2 text-xs">
+-          <label className="space-y-1">
++          <label className="space-y-1" htmlFor={dailyStartId}>
+             <span className="text-slate-400">Start</span>
+             <input
++              id={dailyStartId}
+               type="time"
+               value={view.dailyWindow.start}
+               onChange={(event) => handleDailyChange('start', event.target.value)}
+               className="w-full rounded border border-slate-700 bg-slate-800 px-2 py-1 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+             />
+           </label>
+-          <label className="space-y-1">
++          <label className="space-y-1" htmlFor={dailyEndId}>
+             <span className="text-slate-400">End</span>
+             <input
++              id={dailyEndId}
+               type="time"
+               value={view.dailyWindow.end}
+               onChange={(event) => handleDailyChange('end', event.target.value)}
+diff --git a/frontend/src/components/TopBar.tsx b/frontend/src/components/TopBar.tsx
+index 92edda6..0dbfbfd 100644
+--- a/frontend/src/components/TopBar.tsx
++++ b/frontend/src/components/TopBar.tsx
+@@ -3,6 +3,8 @@ import { useUTCClock } from '../hooks/useUTCClock';
+ import { useDashboardStore } from '../store/useDashboardStore';
+ import TimeSelector from './TimeSelector';
+ import GlobalCategoryFilter from './filters/GlobalCategoryFilter';
++import logo1x from '../assets/SENEAM_Logo_H.webp';
++import logo2x from '../assets/SENEAM_Logo_H@2x.webp';
+
+ const viewOptions: { label: string; value: 'globe' | 'list' | 'cards' }[] = [
+   { label: 'Globe', value: 'globe' },
+@@ -20,43 +22,75 @@ export default function TopBar() {
+   }));
+
+   return (
+-    <header className="sticky top-0 z-20 bg-slate-950/80 backdrop-blur border-b border-slate-800">
+-      <div className="mx-auto flex h-16 items-center gap-4 px-6">
+-        <div className="text-left">
+-          <p className="text-xs uppercase tracking-wide text-slate-400">UTC</p>
+-          <p className="text-lg font-mono">{clock}</p>
+-        </div>
+-        <button
+-          className="rounded border border-slate-700 px-3 py-1 text-sm text-slate-200 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
+-          onClick={() => refreshNotams({})}
+-        >
+-          Refresh
+-        </button>
+-        <div className="flex flex-1 items-center gap-4">
+-          <TimeSelector />
+-          <GlobalCategoryFilter />
++    <header className="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/90 backdrop-blur">
++      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-4">
++        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
++          <div className="flex flex-1 items-center justify-start">
++            <a href="/" className="inline-flex items-center" aria-label="Inicio SENEAM">
++              <img
++                src={logo1x}
++                srcSet={`${logo1x} 260w, ${logo2x} 520w`}
++                sizes="(max-width: 768px) 180px, 260px"
++                alt="SENEAM"
++                className="h-auto max-h-16 w-auto"
++                loading="lazy"
++                decoding="async"
++              />
++            </a>
++          </div>
++          <div className="flex flex-1 items-center justify-center text-center">
++            <p className="text-base font-semibold uppercase tracking-[0.2em] text-slate-200 sm:text-lg">
++              NOTAM Operational Dashboard
++            </p>
++          </div>
++          <div className="flex flex-1 items-center justify-end gap-3">
++            <div className="inline-flex rounded-full border border-slate-700 bg-slate-900/70 p-1 shadow-inner shadow-slate-900/40">
++              {viewOptions.map((option) => (
++                <button
++                  key={option.value}
++                  className={`rounded-full px-4 py-1 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-950 ${
++                    view.mode === option.value
++                      ? 'bg-sky-500 text-white shadow shadow-sky-500/40'
++                      : 'text-slate-300 hover:bg-slate-800'
++                  }`}
++                  onClick={() => setMode(option.value)}
++                >
++                  {option.label}
++                </button>
++              ))}
++            </div>
++            <button
++              className="rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-50 shadow-lg shadow-emerald-500/30 transition hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:ring-offset-2 focus:ring-offset-slate-950"
++              onClick={() => setIsAdding(true)}
++            >
++              Add Airport
++            </button>
++          </div>
+         </div>
+-        <div className="flex items-center gap-2">
+-          {viewOptions.map((option) => (
+-            <button
+-              key={option.value}
+-              className={`rounded px-3 py-1 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 ${
+-                view.mode === option.value ? 'bg-sky-500 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+-              }`}
+-              onClick={() => setMode(option.value)}
+-            >
+-              {option.label}
+-            </button>
+-          ))}
++        <div className="flex flex-col gap-3 rounded-2xl border border-slate-800/80 bg-slate-950/80 p-4 shadow-lg shadow-slate-900/30 lg:flex-row lg:items-center lg:justify-between">
++          <div className="flex flex-wrap items-center gap-4 text-sm text-slate-300">
++            <div className="text-left">
++              <p className="text-[11px] uppercase tracking-widest text-slate-500">UTC</p>
++              <p className="font-mono text-lg text-slate-100">{clock}</p>
++            </div>
++            <button
++              className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-950"
++              onClick={() => refreshNotams({})}
++            >
++              Refresh data
++            </button>
++          </div>
++          <div className="flex flex-1 flex-wrap items-stretch gap-4">
++            <div className="min-w-[260px] flex-1">
++              <TimeSelector />
++            </div>
++            <div className="min-w-[220px]">
++              <GlobalCategoryFilter />
++            </div>
++          </div>
+         </div>
+-        <button
+-          className="rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-50 shadow-lg shadow-emerald-500/30 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+-          onClick={() => setIsAdding(true)}
+-        >
+-          Add Airport
+-        </button>
+-        {isAdding && <AddAirportDialog onClose={() => setIsAdding(false)} />}
+       </div>
++      {isAdding && <AddAirportDialog onClose={() => setIsAdding(false)} />}
+     </header>
+   );
+ }
+@@ -69,6 +103,7 @@ function AddAirportDialog({ onClose }: { onClose: () => void }) {
+   const [base, setBase] = useState(false);
+   const [submitting, setSubmitting] = useState(false);
+   const addAirport = useDashboardStore((state) => state.addAirport);
++  const titleId = 'add-airport-title';
+
+   const handleSubmit = async (event: React.FormEvent) => {
+     event.preventDefault();
+@@ -88,16 +123,19 @@ function AddAirportDialog({ onClose }: { onClose }: { onClose: () => void }) {
+   };
+
+   return (
+-    <div className="fixed inset-0 z-30 flex items-center justify-center bg-slate-900/70">
++    <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/70 p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+       <form
+         onSubmit={handleSubmit}
+         className="w-full max-w-md space-y-4 rounded-lg border border-slate-700 bg-slate-900 p-6 shadow-xl shadow-sky-500/10"
+       >
+-        <h2 className="text-lg font-semibold text-slate-100">Add airport</h2>
++        <h2 id={titleId} className="text-lg font-semibold text-slate-100">
++          Add airport
++        </h2>
+         <div className="grid grid-cols-2 gap-4">
+-          <label className="space-y-1 text-sm">
++          <label className="space-y-1 text-sm" htmlFor="airport-icao">
+             <span className="text-slate-400">ICAO</span>
+             <input
++              id="airport-icao"
+               value={icao}
+               onChange={(event) => setIcao(event.target.value)}
+               className="w-full rounded border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+@@ -106,9 +144,10 @@ function AddAirportDialog({ onClose }: { onClose }: { onClose: () => void }) {
+               required
+             />
+           </label>
+-          <label className="space-y-1 text-sm">
++          <label className="space-y-1 text-sm" htmlFor="airport-name">
+             <span className="text-slate-400">Name</span>
+             <input
++              id="airport-name"
+               value={name}
+               onChange={(event) => setName(event.target.value)}
+               className="w-full rounded border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+@@ -116,9 +155,10 @@ function AddAirportDialog({ onClose }: { onClose }: { onClose: () => void }) {
+               required
+             />
+           </label>
+-          <label className="space-y-1 text-sm">
++          <label className="space-y-1 text-sm" htmlFor="airport-latitude">
+             <span className="text-slate-400">Latitude</span>
+             <input
++              id="airport-latitude"
+               value={lat}
+               onChange={(event) => setLat(event.target.value)}
+               type="number"
+@@ -127,9 +167,10 @@ function AddAirportDialog({ onClose }: { onClose }: { onClose: () => void }) {
+               required
+             />
+           </label>
+-          <label className="space-y-1 text-sm">
++          <label className="space-y-1 text-sm" htmlFor="airport-longitude">
+             <span className="text-slate-400">Longitude</span>
+             <input
++              id="airport-longitude"
+               value={lon}
+               onChange={(event) => setLon(event.target.value)}
+               type="number"
+@@ -139,8 +180,9 @@ function AddAirportDialog({ onClose }: { onClose }: { onClose: () => void }) {
+             />
+           </label>
+         </div>
+-        <label className="flex items-center gap-2 text-sm text-slate-300">
++        <label className="flex items-center gap-2 text-sm text-slate-300" htmlFor="airport-base">
+           <input
++            id="airport-base"
+             type="checkbox"
+             checked={base}
+             onChange={(event) => setBase(event.target.checked)}
+@@ -151,7 +193,7 @@ function AddAirportDialog({ onClose }: { onClose }: { onClose: () => void }) {
+         <div className="flex justify-end gap-3 pt-4">
+           <button
+             type="button"
+-            className="rounded border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800"
++            className="rounded border border-slate-600 px-4 py-2 text-sm text-slate-300 transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500"
+             onClick={onClose}
+           >
+             Cancel
+@@ -159,7 +201,7 @@ function AddAirportDialog({ onClose }: { onClose }: { onClose: () => void }) {
+           <button
+             type="submit"
+             disabled={submitting}
+-            className="rounded bg-sky-500 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-400 disabled:opacity-50"
++            className="rounded bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-300 disabled:opacity-50"
+           >
+             {submitting ? 'Saving…' : 'Save'}
+           </button>
+diff --git a/frontend/src/components/filters/GlobalCategoryFilter.tsx b/frontend/src/components/filters/GlobalCategoryFilter.tsx
+index 7e6a6c7..7dbab77 100644
+--- a/frontend/src/components/filters/GlobalCategoryFilter.tsx
++++ b/frontend/src/components/filters/GlobalCategoryFilter.tsx
+@@ -14,8 +14,12 @@ export default function GlobalCategoryFilter() {
+
+   return (
+     <div className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-2 text-sm">
+-      <span className="text-xs uppercase tracking-wide text-slate-400">Global category</span>
++      <label htmlFor="global-category" className="text-xs uppercase tracking-wide text-slate-400">
++        Global category
++      </label>
+       <select
++        id="global-category"
++        name="global-category"
+         value={category ?? 'all'}
+         onChange={(event) => handleChange(event.target.value)}
+         className="min-w-[200px] rounded border border-slate-700 bg-slate-800 px-2 py-1 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
