@@ -3,8 +3,8 @@ import { useUTCClock } from '../hooks/useUTCClock';
 import { useDashboardStore } from '../store/useDashboardStore';
 import TimeSelector from './TimeSelector';
 import GlobalCategoryFilter from './filters/GlobalCategoryFilter';
-import logo1x from '../assets/SENEAM_Logo_H.webp';
-import logo2x from '../assets/SENEAM_Logo_H@2x.webp';
+import logo1x from '@/assets/SENEAM_Logo_H.webp';
+import logo2x from '@/assets/SENEAM_Logo_H@2x.webp';
 
 const viewOptions: { label: string; value: 'globe' | 'list' | 'cards' }[] = [
   { label: 'Globe', value: 'globe' },
