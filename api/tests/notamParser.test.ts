@@ -27,4 +27,20 @@ describe('parseNotam', () => {
     expect(parsed.schedule).toBe('0100-1100');
     expect(parsed.status === 'UPCOMING' || parsed.status === 'ACTIVE' || parsed.status === 'EXPIRED').toBeTruthy();
   });
+
+  it('extracts ICAO from section A even when FIR is present', () => {
+    const raw = `(
+A1234/24 NOTAMN
+Q) MMFR/QXXXX/IV/NBO/A/000/999/1800N09900W005
+A) MMCN/MMFR FIR
+B) 2401010000
+C) 2401312359
+E) RWY CLOSED
+)`;
+
+    const parsed = parseNotam(raw);
+
+    expect(parsed.fir).toBe('MMFR');
+    expect(parsed.icao).toBe('MMCN');
+  });
 });

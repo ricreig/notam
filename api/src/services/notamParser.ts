@@ -1,7 +1,7 @@
 import { ParsedNotam, NotamStatus } from '../types';
 
 const Q_LINE_REGEX = /Q\)\s*([A-Z]{4})\/([A-Z]{5})\/([A-Z]{1,2})\/([A-Z]{1,4})\/([A-Z]{1,2})\/([0-9]{3})\/([0-9]{3})\/([0-9]{4}[NS][0-9]{5}[EW][0-9]{3})/;
-const SECTION_REGEX = /([A-G])\)\s*([^A-G\)]*)(?=\s+[A-G]\)|$)/g;
+const SECTION_REGEX = /([A-G])\)\s*([\s\S]*?)(?=\n\s*[A-G]\)|$)/g;
 const NUMBER_REGEX = /\(([A-Z]\d{4}\/\d{2})\s+NOTAM[NC]|NOTAM[NRC]\s*([A-Z]\d{4}\/\d{2})/;
 const ICAO_REGEX = /\b([A-Z]{4})\b/;
 
