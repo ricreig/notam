@@ -35,6 +35,8 @@ docker compose exec api npm run seed
 
 The frontend connects to the API, providing management of airports, parsing of raw NOTAM messages (`POST /notams/parse`), scoring (severity/relevance) and advanced visualisations (globe, cards, timeline, affected elements).
 
+For a step-by-step deployment checklist (local setup, Fly.io deployment and static hosting), review [`docs/deployment-guide.md`](docs/deployment-guide.md).
+
 ## Manual de referencia
 
 Consulta [`docs/README.md`](docs/README.md) para descargar el Manual Código NOTAM 2020 y la propuesta de diseño oficial desde sus fuentes externas. Los catálogos y clasificadores implementados (categorías, elementos atómicos) se alinean a ese manual.
