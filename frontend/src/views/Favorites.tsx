@@ -324,9 +324,13 @@ export function FavoritesView({
                         return (
                           <li
                             key={notam.id}
-                            className="flex flex-col gap-2 rounded-xl border border-slate-800 bg-slate-900/70 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
+                            className="relative flex h-full flex-col gap-2 rounded-xl border border-slate-800 bg-slate-900/70 px-3 pb-3 pt-4"
                           >
-                            <div>
+                            <SeverityBadge
+                              value={notam.severity}
+                              className="absolute right-3 top-3 px-2 py-0.5 text-[10px] tracking-[0.18em]"
+                            />
+                            <div className="pr-16">
                               <p className="text-sm font-semibold text-slate-100">{notam.number ?? notam.id}</p>
                               <p className="text-xs text-slate-400">{category?.label ?? 'Sin categoría'}</p>
                               <p className="text-xs text-slate-400">
@@ -336,11 +340,10 @@ export function FavoritesView({
                                 {getNotamSummarySnippet(notam, 140) || 'Sin descripción disponible'}
                               </p>
                             </div>
-                            <div className="flex flex-row items-center justify-end gap-2 sm:flex-col sm:items-end">
-                              <SeverityBadge value={notam.severity} />
+                            <div className="mt-auto flex justify-end">
                               <button
                                 type="button"
-                                className="rounded-full border border-sky-500/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-sky-200 hover:bg-slate-900/70"
+                                className="rounded-full border border-sky-500/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-sky-200 transition hover:bg-slate-900/80"
                                 onClick={() => onSelectStation(notam.icao)}
                               >
                                 Detalles
