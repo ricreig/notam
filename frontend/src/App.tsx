@@ -167,7 +167,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
       <TopBar currentView={view} onViewChange={setView} onRefresh={refetchNotams} />
-      <main className="mx-auto max-w-7xl space-y-8 px-6 py-12">
+      <main className="mx-auto max-w-[110rem] space-y-8 px-6 py-12 lg:px-10">
         <div className="min-h-[1.5rem]">
           {showGlobalLoading ? (
             <div className="flex items-center gap-2 text-sm text-slate-400" role="status" aria-live="polite">

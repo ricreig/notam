@@ -63,7 +63,7 @@ export function StationSearch({
 
   return (
     <div className="relative">
-      <label className="flex flex-col text-xs font-semibold uppercase tracking-wide text-slate-400">
+      <label className="flex flex-col text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-400">
         Estación
         <input
           value={inputValue}
@@ -77,7 +77,7 @@ export function StationSearch({
             setTimeout(() => setOpen(false), 150);
           }}
           placeholder={placeholder}
-          className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="mt-1 w-full rounded-full border border-slate-700/80 bg-slate-900/80 px-4 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
         />
       </label>
       {open && filteredSuggestions.length > 0 && (
