@@ -1,28 +1,34 @@
 import axios from 'axios';
-import type { Airport, Catalogs, Notam } from '../types/notam';
 
-const BASE = (import.meta.env.VITE_API_URL ?? 'https://notam-api-ctareig.fly.dev').replace(/\/+$/,'');
-const api = axios.create({ baseURL: BASE, timeout: 10000 });
+const API_BASE =
+  import.meta?.env?.VITE_API_URL ||
+  (typeof window !== 'undefined' ? (window as any).__API_URL__ : '') ||
+  'https://notam-api-ctareig.fly.dev';
 
-const asArray = (v:any) => Array.isArray(v) ? v : Array.isArray(v?.data) ? v.data : [];
+const api = axios.create({
+  baseURL: API_BASE,
+  timeout: 10000,
+  headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+});
 
-export async function fetchAirports(): Promise<Airport[]> {
+export async function fetchAirports() {
   const { data } = await api.get('/airports');
-  return asArray(data);
+  return data;
 }
 
-export async function fetchCatalogs(): Promise<Catalogs | Record<string, unknown>> {
+export async function fetchCatalogs() {
   const { data } = await api.get('/catalogs');
-  return data ?? {};
+  return data;
 }
 
-export type NotamFilters = Record<string, any>;
-export async function fetchNotams(params: NotamFilters = {}): Promise<Notam[]> {
+export async function fetchNotams(params: Record<string, any>) {
   const { data } = await api.get('/notams', { params });
-  return asArray(data);
+  return data;
 }
 
-export async function createAirport(a: Airport): Promise<Airport> {
-  const { data } = await api.post('/airports', a);
+export async function createAirport(airport: {
+  icao: string; name: string; lat: number; lon: number; base?: boolean;
+}) {
+  const { data } = await api.post('/airports', airport);
   return data;
 }

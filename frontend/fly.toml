@@ -2,8 +2,8 @@ app = "notam-frontend-ctareig"
 primary_region = "sjc"
 
 [build]
-  # Pasamos la URL del API al build de Vite como ARG
-  build_args = { VITE_API_URL = "https://notam-api-ctareig.fly.dev" }
+  [build.args]
+    VITE_API_URL = "https://notam-api-ctareig.fly.dev"
 
 [http_service]
   internal_port = 8080
