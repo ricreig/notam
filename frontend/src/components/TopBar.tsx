@@ -15,10 +15,8 @@ const viewOptions: { label: string; value: 'globe' | 'list' | 'cards' }[] = [
 export default function TopBar() {
   const clock = useUTCClock();
   const [isAdding, setIsAdding] = useState(false);
-  const { view, setMode, refreshNotams } = useDashboardStore((state) => ({
-    view: state.view,
-    setMode: state.setMode,
-    refreshNotams: state.refreshNotams,
+  const { view, setMode, refreshNotams } = useDashboardStore((s) => ({
+    view: s.view, setMode: s.setMode, refreshNotams: s.refreshNotams,
   }));
 
   return (
@@ -102,107 +100,60 @@ function AddAirportDialog({ onClose }: { onClose: () => void }) {
   const [lon, setLon] = useState('0');
   const [base, setBase] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const addAirport = useDashboardStore((state) => state.addAirport);
+  const addAirport = useDashboardStore((s) => s.addAirport);
   const titleId = 'add-airport-title';
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setSubmitting(true);
     try {
-      await addAirport({
-        icao: icao.toUpperCase(),
-        name,
-        lat: Number(lat),
-        lon: Number(lon),
-        base,
-      });
+      await addAirport({ icao: icao.toUpperCase(), name, lat: Number(lat), lon: Number(lon), base });
       onClose();
-    } finally {
-      setSubmitting(false);
-    }
+    } finally { setSubmitting(false); }
   };
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/70 p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md space-y-4 rounded-lg border border-slate-700 bg-slate-900 p-6 shadow-xl shadow-sky-500/10"
-      >
-        <h2 id={titleId} className="text-lg font-semibold text-slate-100">
-          Add airport
-        </h2>
+      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4 rounded-lg border border-slate-700 bg-slate-900 p-6 shadow-xl shadow-sky-500/10">
+        <h2 id={titleId} className="text-lg font-semibold text-slate-100">Add airport</h2>
         <div className="grid grid-cols-2 gap-4">
           <label className="space-y-1 text-sm" htmlFor="airport-icao">
             <span className="text-slate-400">ICAO</span>
-            <input
-              id="airport-icao"
-              value={icao}
-              onChange={(event) => setIcao(event.target.value)}
+            <input id="airport-icao" value={icao} onChange={(e) => setIcao(e.target.value)}
               className="w-full rounded border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
-              placeholder="MMMX"
-              maxLength={4}
-              required
-            />
+              placeholder="MMMX" maxLength={4} required />
           </label>
           <label className="space-y-1 text-sm" htmlFor="airport-name">
             <span className="text-slate-400">Name</span>
-            <input
-              id="airport-name"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
+            <input id="airport-name" value={name} onChange={(e) => setName(e.target.value)}
               className="w-full rounded border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
-              placeholder="Aeropuerto"
-              required
-            />
+              placeholder="Aeropuerto" required />
           </label>
           <label className="space-y-1 text-sm" htmlFor="airport-latitude">
             <span className="text-slate-400">Latitude</span>
-            <input
-              id="airport-latitude"
-              value={lat}
-              onChange={(event) => setLat(event.target.value)}
-              type="number"
-              step="0.0001"
+            <input id="airport-latitude" value={lat} onChange={(e) => setLat(e.target.value)}
+              type="number" step="0.0001"
               className="w-full rounded border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
-              required
-            />
+              required />
           </label>
           <label className="space-y-1 text-sm" htmlFor="airport-longitude">
             <span className="text-slate-400">Longitude</span>
-            <input
-              id="airport-longitude"
-              value={lon}
-              onChange={(event) => setLon(event.target.value)}
-              type="number"
-              step="0.0001"
+            <input id="airport-longitude" value={lon} onChange={(e) => setLon(e.target.value)}
+              type="number" step="0.0001"
               className="w-full rounded border border-slate-600 bg-slate-800 px-3 py-2 text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
-              required
-            />
+              required />
           </label>
         </div>
         <label className="flex items-center gap-2 text-sm text-slate-300" htmlFor="airport-base">
-          <input
-            id="airport-base"
-            type="checkbox"
-            checked={base}
-            onChange={(event) => setBase(event.target.checked)}
-            className="rounded border-slate-600 bg-slate-800 text-sky-500 focus:ring-sky-500"
-          />
+          <input id="airport-base" type="checkbox" checked={base} onChange={(e) => setBase(e.target.checked)}
+            className="rounded border-slate-600 bg-slate-800 text-sky-500 focus:ring-sky-500" />
           Mark as base
         </label>
         <div className="flex justify-end gap-3 pt-4">
-          <button
-            type="button"
-            className="rounded border border-slate-600 px-4 py-2 text-sm text-slate-300 transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500"
-            onClick={onClose}
-          >
+          <button type="button" className="rounded border border-slate-600 px-4 py-2 text-sm text-slate-300 transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500" onClick={onClose}>
             Cancel
           </button>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="rounded bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-300 disabled:opacity-50"
-          >
+          <button type="submit" disabled={submitting} className="rounded bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-300 disabled:opacity-50">
             {submitting ? 'Saving…' : 'Save'}
           </button>
         </div>
