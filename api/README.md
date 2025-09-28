@@ -26,13 +26,13 @@ npm test
 # run SQL migrations
 npm run migrate
 
-# seed catalog tables
+# seed catalog tables + Mexico FIR baseline data (usa la base apuntada por DATABASE_URL/DB_*)
 npm run seed
 ```
 
 ## Environment variables
 
-Create a `.env` file (or use the project level `.env` file) with the following values:
+Create a `.env` file (or use the project level `.env` file) with the following values. The API will **not** bootstrap its own PostgreSQL server; these variables simply tell the code where to connect. Point them to your managed/external instance if you are not using the docker-compose database.
 
 ```
 PORT=3001

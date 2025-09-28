@@ -26,7 +26,7 @@ This launches:
 - **api** – Express server on `http://localhost:3001`
 - **frontend** – Vite dev server on `http://localhost:5173`
 
-Run database migrations and seed catalogs once the containers are up:
+Run database migrations and seed catalogs once the containers are up. The seed now loads the full set of Mexican FIR airports and baseline NOTAMs **en la base que tengas configurada en las variables `DATABASE_URL`/`DB_*`** (puede ser el contenedor `db` o una instancia externa):
 
 ```bash
 docker compose exec api npm run migrate
@@ -34,6 +34,8 @@ docker compose exec api npm run seed
 ```
 
 The frontend connects to the API, providing management of airports, parsing of raw NOTAM messages (`POST /notams/parse`), scoring (severity/relevance) and advanced visualisations (globe, cards, timeline, affected elements).
+
+For a step-by-step deployment checklist (local setup, Fly.io deployment and static hosting), review [`docs/deployment-guide.md`](docs/deployment-guide.md).
 
 ## Manual de referencia
 
