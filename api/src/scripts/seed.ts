@@ -1,6 +1,37 @@
 import pool from "../db/pool";
 import { categories } from "../catalogs/categories";
 import { elements } from "../catalogs/elements";
+import mexicoAirports from "../data/mexico_airports.json";
+import mexicoNotams from "../data/mexico_notams.json";
+
+type AirportSeed = {
+  icao: string;
+  name: string;
+  lat: number;
+  lon: number;
+  base: boolean;
+};
+
+type NotamSeed = {
+  icao: string;
+  number: string;
+  q_line: string;
+  subject: string | null;
+  condition: string | null;
+  modifier: string | null;
+  text: string;
+  start_at: string | null;
+  end_at: string | null;
+  lower_ft: number | null;
+  upper_ft: number | null;
+  coords_geojson: unknown;
+  category: string | null;
+  element: string | null;
+  services: string[];
+  severity: number;
+  relevance: number;
+  status: string;
+};
 
 async function main() {
   console.log("Seeding catalog tables");
@@ -23,28 +54,116 @@ async function main() {
      );`
   );
 
-  for (const c of categories) {
-    await pool.query(
-      `INSERT INTO catalog_categories (id,label,color,code)
-       VALUES ($1,$2,$3,$4)
-       ON CONFLICT (id) DO UPDATE
-       SET label=EXCLUDED.label, color=EXCLUDED.color, code=EXCLUDED.code;`,
-      [c.id, c.label, c.color, c.code]
-    );
-  }
+  await pool.query("BEGIN");
 
-  for (const e of elements) {
-    await pool.query(
-      `INSERT INTO catalog_elements (id,category_id,label,matchers)
-       VALUES ($1,$2,$3,$4)
-       ON CONFLICT (id) DO UPDATE
-       SET category_id=EXCLUDED.category_id, label=EXCLUDED.label, matchers=EXCLUDED.matchers;`,
-      [e.id, e.categoryId, e.label, e.matchers]
-    );
-  }
+  try {
+    for (const c of categories) {
+      await pool.query(
+        `INSERT INTO catalog_categories (id,label,color,code)
+         VALUES ($1,$2,$3,$4)
+         ON CONFLICT (id) DO UPDATE
+         SET label=EXCLUDED.label, color=EXCLUDED.color, code=EXCLUDED.code;`,
+        [c.id, c.label, c.color, c.code]
+      );
+    }
 
-  await pool.end();
-  console.log("Seed complete");
+    for (const e of elements) {
+      await pool.query(
+        `INSERT INTO catalog_elements (id,category_id,label,matchers)
+         VALUES ($1,$2,$3,$4)
+         ON CONFLICT (id) DO UPDATE
+         SET category_id=EXCLUDED.category_id, label=EXCLUDED.label, matchers=EXCLUDED.matchers;`,
+        [e.id, e.categoryId, e.label, e.matchers]
+      );
+    }
+
+    console.log("Upserting Mexico FIR airports");
+    for (const airport of mexicoAirports as AirportSeed[]) {
+      await pool.query(
+        `INSERT INTO airports (icao, name, lat, lon, base)
+         VALUES ($1, $2, $3, $4, $5)
+         ON CONFLICT (icao) DO UPDATE
+         SET name = EXCLUDED.name,
+             lat = EXCLUDED.lat,
+             lon = EXCLUDED.lon,
+             base = EXCLUDED.base;`,
+        [airport.icao.toUpperCase(), airport.name, airport.lat, airport.lon, airport.base]
+      );
+    }
+
+    console.log("Upserting FIR and airport NOTAMs");
+    for (const notam of mexicoNotams as NotamSeed[]) {
+      await pool.query(
+        `INSERT INTO notams (
+           icao,
+           number,
+           q_line,
+           subject,
+           condition,
+           modifier,
+           text,
+           start_at,
+           end_at,
+           lower_ft,
+           upper_ft,
+           coords_geojson,
+           category,
+           element,
+           services,
+           severity,
+           relevance,
+           status
+         ) VALUES (
+           $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18
+         )
+         ON CONFLICT (number, icao) DO UPDATE SET
+           q_line = EXCLUDED.q_line,
+           subject = EXCLUDED.subject,
+           condition = EXCLUDED.condition,
+           modifier = EXCLUDED.modifier,
+           text = EXCLUDED.text,
+           start_at = EXCLUDED.start_at,
+           end_at = EXCLUDED.end_at,
+           lower_ft = EXCLUDED.lower_ft,
+           upper_ft = EXCLUDED.upper_ft,
+           coords_geojson = EXCLUDED.coords_geojson,
+           category = EXCLUDED.category,
+           element = EXCLUDED.element,
+           services = EXCLUDED.services,
+           severity = EXCLUDED.severity,
+           relevance = EXCLUDED.relevance,
+           status = EXCLUDED.status;`,
+        [
+          notam.icao.toUpperCase(),
+          notam.number,
+          notam.q_line,
+          notam.subject,
+          notam.condition,
+          notam.modifier,
+          notam.text,
+          notam.start_at ? new Date(notam.start_at) : null,
+          notam.end_at ? new Date(notam.end_at) : null,
+          notam.lower_ft,
+          notam.upper_ft,
+          notam.coords_geojson ? JSON.stringify(notam.coords_geojson) : null,
+          notam.category,
+          notam.element,
+          notam.services,
+          notam.severity,
+          notam.relevance,
+          notam.status
+        ]
+      );
+    }
+
+    await pool.query("COMMIT");
+    console.log("Seed complete");
+  } catch (err) {
+    await pool.query("ROLLBACK");
+    throw err;
+  } finally {
+    await pool.end();
+  }
 }
 
 main().catch(err => {
