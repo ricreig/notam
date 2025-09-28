@@ -7,6 +7,7 @@ import type { Airport, Catalogs, Notam } from '../types/notam';
 import type { StationSuggestion } from '../components/StationSearch';
 import NotamCard from '../components/NotamCard';
 import SeverityBadge from '../components/SeverityBadge';
+import { getNotamSummarySnippet } from '../utils/notamText';
 import { mapSeverity } from '../utils/severity';
 
 interface GlobeViewProps {
@@ -43,6 +44,9 @@ interface MarkerInfo {
   longitude: number;
   count: number;
   maxSeverity: number;
+  previewNotamId: string | null;
+  previewSummary: string | null;
+  previewStartAt: number | null;
 }
 
 export function GlobeView({
@@ -83,8 +87,19 @@ export function GlobeView({
       if (latitude == null || longitude == null) continue;
       const existing = byIcao.get(notam.icao);
       const severity = notam.severity ?? 0;
+      const summary = getNotamSummarySnippet(notam, 160);
+      const startAt = notam.start_at ? new Date(notam.start_at).getTime() : null;
       if (existing) {
         existing.count += 1;
+        if (
+          severity > existing.maxSeverity ||
+          (severity === existing.maxSeverity && (startAt ?? -Infinity) > (existing.previewStartAt ?? -Infinity)) ||
+          existing.previewNotamId === null
+        ) {
+          existing.previewNotamId = notam.id;
+          existing.previewSummary = summary;
+          existing.previewStartAt = startAt;
+        }
         existing.maxSeverity = Math.max(existing.maxSeverity, severity);
       } else {
         byIcao.set(notam.icao, {
@@ -93,6 +108,9 @@ export function GlobeView({
           longitude,
           count: 1,
           maxSeverity: severity,
+          previewNotamId: notam.id,
+          previewSummary: summary,
+          previewStartAt: startAt,
         });
       }
     }
@@ -166,6 +184,7 @@ export function GlobeView({
                             onSelectedNotamChange?.(id);
                           }
                         }}
+                        title={marker.previewSummary ?? undefined}
                       >
                         <span className="rounded-full bg-slate-900/80 px-2 py-1 shadow-lg shadow-slate-950/50">
                           {marker.icao}
@@ -230,12 +249,19 @@ export function GlobeView({
 
           <div className="grid gap-4 sm:grid-cols-2">
             {filteredNotams.slice(0, 6).map((item) => (
-              <div key={item.id} className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
+              <div
+                key={item.id}
+                className="rounded-xl border border-slate-800 bg-slate-950/70 p-4"
+                title={getNotamSummarySnippet(item, 160)}
+              >
                 <p className="text-sm font-semibold text-slate-100">{item.number ?? item.id}</p>
                 <p className="text-xs text-slate-400">{item.icao}</p>
                 <div className="mt-2">
                   <SeverityBadge value={item.severity} />
                 </div>
+                <p className="mt-2 text-xs text-slate-300">
+                  {getNotamSummarySnippet(item, 120) || 'Sin descripción disponible'}
+                </p>
                 <button
                   type="button"
                   className="mt-3 text-xs font-semibold uppercase tracking-wide text-sky-300 hover:text-sky-200"

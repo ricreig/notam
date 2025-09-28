@@ -3,6 +3,8 @@ import clsx from 'clsx';
 import SeverityBadge from './SeverityBadge';
 import CategoryChip from './CategoryChip';
 import type { Notam } from '../types/notam';
+import { formatUtcRangeWithSuffix } from '../utils/datetime';
+import { extractNotamSummary } from '../utils/notamText';
 
 interface NotamCardProps {
   notam: Notam;
@@ -14,35 +16,6 @@ interface NotamCardProps {
   onViewOnMap?: (notam: Notam) => void;
   onSeeAllFromStation?: (icao: string) => void;
   expanded?: boolean;
-}
-
-function formatUtcRange(start?: string | null, end?: string | null) {
-  const format = (value?: string | null) => {
-    if (!value) return '—';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return '—';
-    return `${date.toLocaleString('es-MX', {
-      timeZone: 'UTC',
-      hour12: false,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    })} UTC`;
-  };
-
-  return `${format(start)} → ${format(end)}`;
-}
-
-function extractSummary(notam: Notam) {
-  if (notam.condition) return notam.condition;
-  if (notam.subject) return notam.subject;
-  const match = /E\)([\s\S]*)/i.exec(notam.text ?? '');
-  if (match && match[1]) {
-    return match[1].trim();
-  }
-  return notam.text ?? '';
 }
 
 function computeTimeline(notam: Notam) {
@@ -69,7 +42,7 @@ export function NotamCard({
   expanded = false,
 }: NotamCardProps) {
   const [showFull, setShowFull] = useState(expanded);
-  const summary = extractSummary(notam);
+  const summary = extractNotamSummary(notam);
   const timeline = computeTimeline(notam);
 
   return (
@@ -87,7 +60,9 @@ export function NotamCard({
 
       <div className="space-y-3 text-sm text-slate-200">
         <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Vigencia</p>
-        <p className="rounded-lg border border-slate-800 bg-slate-900/70 px-3 py-2 text-sm text-slate-100">{formatUtcRange(notam.start_at, notam.end_at)}</p>
+        <p className="rounded-lg border border-slate-800 bg-slate-900/70 px-3 py-2 text-sm text-slate-100">
+          {formatUtcRangeWithSuffix(notam.start_at, notam.end_at)}
+        </p>
         {summary && (
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Resumen</p>
