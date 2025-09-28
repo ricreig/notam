@@ -1,6 +1,7 @@
 import pool from '../pool';
 import { ParsedNotam } from '../../types';
 import { computeScore } from '../../services/scoring';
+import { classifyQLine } from '../../services/qClassifier';
 
 export interface NotamFilters {
   icao?: string;
@@ -54,7 +55,34 @@ export async function listNotams(filters: NotamFilters) {
   `;
 
   const result = await pool.query(query, values);
-  return result.rows;
+
+  return result.rows.map((row) => {
+    if (row.category && row.element && row.coords_geojson) {
+      return row;
+    }
+    const qClassification = classifyQLine(row.q_line ?? null);
+    if (!qClassification) {
+      return row;
+    }
+    return {
+      ...row,
+      category: row.category ?? qClassification.categoryId,
+      element: row.element ?? qClassification.elementId,
+      lower_ft: row.lower_ft ?? qClassification.lowerLimitFt,
+      upper_ft: row.upper_ft ?? qClassification.upperLimitFt,
+      coords_geojson:
+        row.coords_geojson ??
+        (qClassification.coordinates
+          ? {
+              type: 'Point',
+              coordinates: [qClassification.coordinates.lon, qClassification.coordinates.lat],
+              ...(qClassification.coordinates.radiusNm != null
+                ? { properties: { radiusNm: qClassification.coordinates.radiusNm } }
+                : {}),
+            }
+          : null),
+    };
+  });
 }
 
 export async function insertParsedNotam(parsed: ParsedNotam & { category?: string | null; element?: string | null; services?: string[]; overrideSeverity?: number | null; overrideRelevance?: number | null; }) {

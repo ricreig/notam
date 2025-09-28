@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { parseNotam } from '../services/notamParser';
 import { listNotams, insertParsedNotam } from '../db/queries/notams';
 import { elements } from '../catalogs/elements';
+import { classifyQLine } from '../services/qClassifier';
 
 const router = Router();
 
@@ -46,11 +47,13 @@ router.post('/parse', async (req, res, next) => {
     const body = parseSchema.parse(req.body);
     const parsed = parseNotam(body.raw);
 
-    const matchedElement = body.element ?? inferElement(parsed.subject ?? '', parsed.condition ?? '');
+    const qClassification = classifyQLine(parsed.qLine);
+    const matchedElement =
+      body.element ?? qClassification?.elementId ?? inferElement(parsed.subject ?? '', parsed.condition ?? '');
 
     const stored = await insertParsedNotam({
       ...parsed,
-      category: body.category ?? matchCategoryFromElement(matchedElement),
+      category: body.category ?? qClassification?.categoryId ?? matchCategoryFromElement(matchedElement),
       element: matchedElement,
       services: body.services ?? [],
       overrideSeverity: body.overrideSeverity ?? null,

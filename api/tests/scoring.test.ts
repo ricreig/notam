@@ -3,7 +3,7 @@ import { computeScore } from '../src/services/scoring';
 describe('computeScore', () => {
   it('awards high severity for runway closure at base airport', () => {
     const result = computeScore({
-      element: 'runway',
+      element: 'AGA-M-MR',
       subject: 'RWY 05L',
       condition: 'CLOSED',
       startAt: new Date().toISOString(),
@@ -20,7 +20,7 @@ describe('computeScore', () => {
 
   it('keeps info level low for informational notice', () => {
     const result = computeScore({
-      element: 'warnings',
+      element: 'W-W-WP',
       subject: 'BIRD ACTIVITY',
       condition: 'CAUTION ADVISED',
       startAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
