@@ -1,83 +1,216 @@
-import { useEffect } from 'react';
-import TopBar from './components/TopBar';
-import { useDashboardStore } from './store/useDashboardStore';
-import GlobeView from './components/GlobeView';
-import AirportCard from './components/AirportCard';
-import AffectedElements from './components/AffectedElements';
-import NotamTimeline from './components/NotamTimeline';
+import { useEffect, useMemo, useState } from 'react';
+import TopBar, { type ViewKey } from './components/TopBar';
+import GlobeView from './views/Globe';
+import ListView from './views/List';
+import CardsView from './views/Cards';
+import FavoritesView from './views/Favorites';
+import useCatalogs from './hooks/useCatalogs';
+import useAirports from './hooks/useAirports';
+import useNotams from './hooks/useNotams';
+import { DEFAULT_FILTERS, type Filters } from './types/filters';
+import type { Notam } from './types/notam';
 
-function EmptyState() {
-  return (
-    <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-slate-700 bg-slate-900/40">
-      <p className="text-sm text-slate-400">Add an airport to start tracking NOTAMs.</p>
-    </div>
-  );
+const FAVORITES_KEY = 'notam:favorites:icao';
+const ICAO_REGEX = /^[A-Z]{4}$/i;
+
+function loadFavorites(): string[] {
+  if (typeof window === 'undefined') return [];
+  const raw = window.localStorage.getItem(FAVORITES_KEY);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.map((item) => String(item).toUpperCase()).filter((item) => ICAO_REGEX.test(item)) : [];
+  } catch (error) {
+    console.warn('Error parsing favorites from storage', error);
+    return [];
+  }
+}
+
+function saveFavorites(favorites: string[]) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
 }
 
 export default function App() {
-  const { airports, notams, fetchInitial, loading, view } = useDashboardStore((state) => ({
-    airports: state.airports,
-    notams: state.notams,
-    fetchInitial: state.fetchInitial,
-    loading: state.loading,
-    view: state.view,
-  }));
+  const [view, setView] = useState<ViewKey>('globe');
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const [favorites, setFavorites] = useState<string[]>(() => loadFavorites());
+  const [highlightedNotamId, setHighlightedNotamId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchInitial();
-  }, [fetchInitial]);
+    saveFavorites(favorites);
+  }, [favorites]);
 
-  const notamsByAirport = airports.map((airport) => ({
-    airport,
-    notams: notams.filter((item) => item.icao === airport.icao),
-  }));
+  const { data: catalogs } = useCatalogs();
+  const {
+    data: airports,
+    loading: airportsLoading,
+    error: airportsError,
+  } = useAirports();
+
+  const trimmedStation = filters.stationQuery?.trim().toUpperCase() ?? '';
+  const isIcaoQuery = ICAO_REGEX.test(trimmedStation);
+  const applyStationFilter = !(view === 'favorites' && isIcaoQuery && !favorites.includes(trimmedStation));
+
+  const {
+    data: notams,
+    loading: notamsLoading,
+    error: notamsError,
+    refetch: refetchNotams,
+  } = useNotams(filters, { applyStationFilter });
+
+  const airportIndex = useMemo(() => new Map(airports.map((airport) => [airport.icao, airport])), [airports]);
+
+  const filteredNotams = useMemo(() => {
+    const query = filters.stationQuery?.trim().toLowerCase() ?? '';
+    if (!query) return notams;
+    if (ICAO_REGEX.test(query.toUpperCase())) {
+      return notams;
+    }
+    if (query.length < 3) return notams;
+    return notams.filter((notam) => {
+      const airport = airportIndex.get(notam.icao);
+      const icaoMatch = notam.icao.toLowerCase().startsWith(query);
+      const nameMatch = (airport?.name ?? '').toLowerCase().includes(query);
+      return icaoMatch || nameMatch;
+    });
+  }, [notams, filters.stationQuery, airportIndex]);
+
+  const favoritesDataset = useMemo(() => {
+    if (!filters.stationQuery) return notams;
+    const trimmed = filters.stationQuery.trim().toUpperCase();
+    if (ICAO_REGEX.test(trimmed) && favorites.includes(trimmed)) {
+      return notams.filter((notam) => notam.icao === trimmed);
+    }
+    return notams;
+  }, [notams, filters.stationQuery, favorites]);
+
+  const stationSuggestions = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const notam of notams) {
+      counts.set(notam.icao, (counts.get(notam.icao) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([icao, count]) => ({ icao, name: airportIndex.get(icao)?.name ?? null, count }));
+  }, [notams, airportIndex]);
+
+  const handleFiltersChange = (next: Filters) => {
+    setFilters(next);
+    setHighlightedNotamId(null);
+  };
+
+  const handleClearFilters = () => {
+    setFilters(DEFAULT_FILTERS);
+    setHighlightedNotamId(null);
+  };
+
+  const toggleFavorite = (icao: string) => {
+    const normalized = icao.toUpperCase();
+    setFavorites((prev) =>
+      prev.includes(normalized) ? prev.filter((item) => item !== normalized) : [...prev, normalized],
+    );
+  };
+
+  const handleSelectStation = (icao: string) => {
+    const upper = icao.toUpperCase();
+    setFilters((prev) => ({ ...prev, stationQuery: upper }));
+    setView('list');
+    setHighlightedNotamId(null);
+  };
+
+  const handleViewOnMap = (notam: Notam) => {
+    setFilters((prev) => ({ ...prev, stationQuery: notam.icao }));
+    setView('globe');
+    setHighlightedNotamId(notam.id);
+  };
+
+  const globalLoading = notamsLoading || airportsLoading;
+  const globalError = notamsError || airportsError;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
-      <TopBar />
+      <TopBar currentView={view} onViewChange={setView} onRefresh={refetchNotams} />
       <main className="mx-auto max-w-7xl space-y-8 px-6 py-12">
-        {loading && <p className="text-sm text-slate-400">Loading...</p>}
-        {!airports.length && !loading ? (
-          <EmptyState />
-        ) : (
-          <>
-            {view.mode === 'globe' && <GlobeView />}
-            {view.mode === 'cards' && (
-              <div className="grid gap-6">
-                {notamsByAirport.map(({ airport, notams }) => (
-                  <AirportCard key={airport.icao} airport={airport} notams={notams} />
-                ))}
-              </div>
-            )}
-            {view.mode === 'list' && (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-sm">
-                  <thead>
-                    <tr>
-                      <th className="p-2 text-left">ID</th>
-                      <th className="p-2 text-left">ICAO</th>
-                      <th className="p-2 text-left">Número</th>
-                      <th className="p-2 text-left">Vigencia</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {notams.map((n:any) => (
-                      <tr key={n.id} className="border-t border-slate-800">
-                        <td className="p-2">{n.id}</td>
-                        <td className="p-2">{n.icao}</td>
-                        <td className="p-2">{n.number ?? '—'}</td>
-                        <td className="p-2">{(n.start_at ?? '—')} → {(n.end_at ?? '—')}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-            <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-              <AffectedElements notams={notams} />
-              <NotamTimeline notams={notams} />
-            </section>
-          </>
+        {globalLoading && <p className="text-sm text-slate-400">Cargando datos…</p>}
+        {globalError && (
+          <p className="rounded-lg border border-rose-400 bg-rose-500/10 px-3 py-2 text-sm text-rose-100">
+            Ocurrió un error al cargar la información. {globalError.message}
+          </p>
+        )}
+
+        {view === 'globe' && (
+          <GlobeView
+            notams={notams}
+            filteredNotams={filteredNotams}
+            airports={airports}
+            catalogs={catalogs}
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            onClearFilters={handleClearFilters}
+            stationSuggestions={stationSuggestions}
+            loading={notamsLoading}
+            error={notamsError}
+            onRetry={refetchNotams}
+            favorites={favorites}
+            onToggleFavorite={toggleFavorite}
+            onSelectStation={handleSelectStation}
+            selectedNotamId={highlightedNotamId}
+            onSelectedNotamChange={setHighlightedNotamId}
+          />
+        )}
+
+        {view === 'list' && (
+          <ListView
+            notams={filteredNotams}
+            airports={airports}
+            catalogs={catalogs}
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            onClearFilters={handleClearFilters}
+            stationSuggestions={stationSuggestions}
+            loading={notamsLoading}
+            error={notamsError}
+            onRetry={refetchNotams}
+          />
+        )}
+
+        {view === 'cards' && (
+          <CardsView
+            notams={filteredNotams}
+            airports={airports}
+            catalogs={catalogs}
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            onClearFilters={handleClearFilters}
+            stationSuggestions={stationSuggestions}
+            favorites={favorites}
+            onToggleFavorite={toggleFavorite}
+            onViewOnMap={handleViewOnMap}
+            onSelectStation={handleSelectStation}
+            loading={notamsLoading}
+            error={notamsError}
+            onRetry={refetchNotams}
+          />
+        )}
+
+        {view === 'favorites' && (
+          <FavoritesView
+            notams={favoritesDataset}
+            airports={airports}
+            catalogs={catalogs}
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            onClearFilters={handleClearFilters}
+            stationSuggestions={stationSuggestions}
+            favorites={favorites}
+            onToggleFavorite={toggleFavorite}
+            onSelectStation={handleSelectStation}
+            loading={notamsLoading}
+            error={notamsError}
+            onRetry={refetchNotams}
+          />
         )}
       </main>
     </div>
