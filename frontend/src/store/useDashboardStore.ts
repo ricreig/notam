@@ -3,6 +3,8 @@ import { persist } from 'zustand/middleware';
 import { Airport, Catalogs, Notam } from '../types/notam';
 import { fetchAirports, fetchCatalogs, fetchNotams, NotamFilters, createAirport } from '../api/client';
 
+const asArray = (v:any) => Array.isArray(v) ? v : Array.isArray(v?.data) ? v.data : [];
+
 export interface ViewState {
   mode: 'globe' | 'list' | 'cards';
   timeMode: 'absolute' | 'relative' | 'daily';
@@ -15,7 +17,7 @@ export interface ViewState {
 interface DashboardState {
   airports: Airport[];
   notams: Notam[];
-  catalogs: Catalogs | null;
+  catalogs: Catalogs | Record<string, unknown>;
   loading: boolean;
   view: ViewState;
   favorites: string[];
@@ -39,7 +41,7 @@ export const useDashboardStore = create<DashboardState>()(
     (set, get) => ({
       airports: [],
       notams: [],
-      catalogs: null,
+      catalogs: {},               // ← nunca null
       loading: false,
       favorites: [],
       savedViews: {},
@@ -51,64 +53,43 @@ export const useDashboardStore = create<DashboardState>()(
         dailyWindow: { start: '06:00', end: '18:00' },
         categoryFilter: null,
       },
+
       fetchInitial: async () => {
         set({ loading: true });
         const [airports, catalogs] = await Promise.all([fetchAirports(), fetchCatalogs()]);
-        set({ airports, catalogs, loading: false });
+        set({ airports: asArray(airports), catalogs: catalogs ?? {}, loading: false });
         await get().refreshNotams({});
       },
+
       refreshNotams: async (filters = {}) => {
         set({ loading: true });
         const state = get();
-        const derivedFilters: NotamFilters = {
-          ...filters,
-        };
-        if (state.view.categoryFilter) {
-          derivedFilters.cat = state.view.categoryFilter;
-        }
-        const notams = await fetchNotams(derivedFilters);
-        set({ notams, loading: false });
+        const derived: NotamFilters = { ...filters };
+        if (state.view.categoryFilter) derived.cat = state.view.categoryFilter;
+        const notams = await fetchNotams(derived);
+        set({ notams: asArray(notams), loading: false });
       },
+
       addAirport: async (airport) => {
         const created = await createAirport(airport);
-        set((state) => ({ airports: [...state.airports.filter((a) => a.icao !== created.icao), created] }));
+        set((state) => ({ airports: [...state.airports.filter(a => a.icao !== created.icao), created] }));
       },
-      setMode: (mode) => set((state) => ({ view: { ...state.view, mode } })),
-      setCategoryFilter: (category) => set((state) => ({ view: { ...state.view, categoryFilter: category } })),
-      setTimeMode: (mode) => set((state) => ({ view: { ...state.view, timeMode: mode } })),
-      setAbsoluteRange: (range) =>
-        set((state) => ({ view: { ...state.view, absoluteRange: range, timeMode: 'absolute' } })),
-      setRelativeHours: (hours) =>
-        set((state) => ({ view: { ...state.view, relativeHours: hours, timeMode: 'relative' } })),
-      setDailyWindow: (window) =>
-        set((state) => ({ view: { ...state.view, dailyWindow: window, timeMode: 'daily' } })),
-      toggleFavorite: (notamId) =>
-        set((state) => ({
-          favorites: state.favorites.includes(notamId)
-            ? state.favorites.filter((id) => id !== notamId)
-            : [...state.favorites, notamId],
-        })),
-      saveView: (name) =>
-        set((state) => ({
-          savedViews: {
-            ...state.savedViews,
-            [name]: state.view,
-          },
-        })),
-      loadView: (name) => {
-        const view = get().savedViews[name];
-        if (view) {
-          set({ view });
-        }
-      },
+
+      setMode: (mode) => set((s) => ({ view: { ...s.view, mode } })),
+      setCategoryFilter: (category) => set((s) => ({ view: { ...s.view, categoryFilter: category } })),
+      setTimeMode: (mode) => set((s) => ({ view: { ...s.view, timeMode: mode } })),
+      setAbsoluteRange: (range) => set((s) => ({ view: { ...s.view, absoluteRange: range, timeMode: 'absolute' } })),
+      setRelativeHours: (hours) => set((s) => ({ view: { ...s.view, relativeHours: hours, timeMode: 'relative' } })),
+      setDailyWindow: (window) => set((s) => ({ view: { ...s.view, dailyWindow: window, timeMode: 'daily' } })),
+      toggleFavorite: (id) => set((s) => ({
+        favorites: s.favorites.includes(id) ? s.favorites.filter(x => x !== id) : [...s.favorites, id],
+      })),
+      saveView: (name) => set((s) => ({ savedViews: { ...s.savedViews, [name]: s.view } })),
+      loadView: (name) => { const v = get().savedViews[name]; if (v) set({ view: v }); },
     }),
     {
       name: 'notam-dashboard-store',
-      partialize: (state) => ({
-        favorites: state.favorites,
-        savedViews: state.savedViews,
-        view: state.view,
-      }),
+      partialize: (s) => ({ favorites: s.favorites, savedViews: s.savedViews, view: s.view }),
     },
   ),
 );
