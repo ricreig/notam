@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 
 export interface StationSuggestion {
@@ -28,17 +28,28 @@ export function StationSearch({
 }: StationSearchProps) {
   const [inputValue, setInputValue] = useState(value);
   const [open, setOpen] = useState(false);
+  const debouncedCallbackRef = useRef(onDebouncedChange);
+  const lastEmittedRef = useRef(value.trim());
+
+  useEffect(() => {
+    debouncedCallbackRef.current = onDebouncedChange;
+  }, [onDebouncedChange]);
 
   useEffect(() => {
     setInputValue(value);
   }, [value]);
 
   useEffect(() => {
-    const handle = setTimeout(() => {
-      onDebouncedChange(inputValue.trim());
+    const trimmed = inputValue.trim();
+    if (lastEmittedRef.current === trimmed) {
+      return undefined;
+    }
+    const handle = window.setTimeout(() => {
+      lastEmittedRef.current = trimmed;
+      debouncedCallbackRef.current(trimmed);
     }, debounceMs);
-    return () => clearTimeout(handle);
-  }, [inputValue, debounceMs, onDebouncedChange]);
+    return () => window.clearTimeout(handle);
+  }, [inputValue, debounceMs]);
 
   const filteredSuggestions = useMemo(() => {
     if (!inputValue) return suggestions.slice(0, 8);
@@ -82,7 +93,9 @@ export function StationSearch({
                   event.preventDefault();
                   setInputValue(item.icao);
                   onImmediateChange?.(item.icao);
-                  onDebouncedChange(item.icao);
+                  const trimmed = item.icao.trim();
+                  lastEmittedRef.current = trimmed;
+                  debouncedCallbackRef.current(trimmed);
                   setOpen(false);
                 }}
               >

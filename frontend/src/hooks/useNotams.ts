@@ -37,7 +37,7 @@ function buildQuery(filters: Filters, applyStationFilter: boolean): [NotamFilter
   }
 
   if (filters.category && filters.category !== 'all') {
-    query.category = filters.category;
+    query.cat = filters.category;
   }
 
   const trimmed = filters.stationQuery?.trim().toUpperCase() ?? '';
