@@ -124,6 +124,7 @@ Esta guía explica, paso a paso y sin asumir conocimientos previos, cómo prepar
      fly postgres attach notam-postgres
      ```
      El comando `attach` inyecta `DATABASE_URL`, `DB_HOST`, `DB_USER`, etc. como secretos.
+
    - **Usar una base externa**: añade los valores manualmente con `fly secrets set` (ver paso 4).
 
 4. **Configura secretos obligatorios**:
