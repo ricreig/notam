@@ -3,6 +3,7 @@ import { categories } from "../catalogs/categories";
 import { elements } from "../catalogs/elements";
 import mexicoAirports from "../data/mexico_airports.json";
 import mexicoNotams from "../data/mexico_notams.json";
+import { classifyQLine } from "../services/qClassifier";
 
 // Helper functions to automatically classify NOTAMs.
 /**
@@ -119,8 +120,24 @@ async function main() {
     for (const notam of mexicoNotams as NotamSeed[]) {
       // Automatically infer element and category if they are not provided.
       // The seed data may not include these fields; classification here improves filtering.
-      const inferredElement = inferElement(notam.subject ?? null, notam.condition ?? null);
-      const inferredCategory = matchCategoryFromElement(inferredElement);
+      const qClassification = classifyQLine(notam.q_line ?? null);
+      const inferredElement = qClassification?.elementId ?? inferElement(notam.subject ?? null, notam.condition ?? null);
+      const inferredCategory = qClassification?.categoryId ?? matchCategoryFromElement(inferredElement);
+
+      const lowerFt = notam.lower_ft ?? qClassification?.lowerLimitFt ?? null;
+      const upperFt = notam.upper_ft ?? qClassification?.upperLimitFt ?? null;
+
+      const coordsGeojson = notam.coords_geojson
+        ? JSON.stringify(notam.coords_geojson)
+        : qClassification?.coordinates
+        ? JSON.stringify({
+            type: "Point",
+            coordinates: [qClassification.coordinates.lon, qClassification.coordinates.lat],
+            ...(qClassification.coordinates.radiusNm != null
+              ? { properties: { radiusNm: qClassification.coordinates.radiusNm } }
+              : {}),
+          })
+        : null;
 
       // Prefer existing element/category if present in the seed, otherwise use inferred values
       const finalElement = notam.element ?? inferredElement;
@@ -176,9 +193,9 @@ async function main() {
           notam.text,
           notam.start_at ? new Date(notam.start_at) : null,
           notam.end_at ? new Date(notam.end_at) : null,
-          notam.lower_ft,
-          notam.upper_ft,
-          notam.coords_geojson ? JSON.stringify(notam.coords_geojson) : null,
+          lowerFt,
+          upperFt,
+          coordsGeojson,
           finalCategory,
           finalElement,
           notam.services,

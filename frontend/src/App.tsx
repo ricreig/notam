@@ -127,13 +127,30 @@ export default function App() {
   };
 
   const globalLoading = notamsLoading || airportsLoading;
+  const [showGlobalLoading, setShowGlobalLoading] = useState(globalLoading);
+
+  useEffect(() => {
+    if (globalLoading) {
+      setShowGlobalLoading(true);
+      return;
+    }
+    const timeout = window.setTimeout(() => setShowGlobalLoading(false), 600);
+    return () => window.clearTimeout(timeout);
+  }, [globalLoading]);
   const globalError = notamsError || airportsError;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
       <TopBar currentView={view} onViewChange={setView} onRefresh={refetchNotams} />
       <main className="mx-auto max-w-7xl space-y-8 px-6 py-12">
-        {globalLoading && <p className="text-sm text-slate-400">Cargando datos…</p>}
+        <div className="min-h-[1.5rem]">
+          {showGlobalLoading && (
+            <div className="flex items-center gap-2 text-sm text-slate-400" role="status" aria-live="polite">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-sky-400" aria-hidden="true" />
+              Cargando datos…
+            </div>
+          )}
+        </div>
         {globalError && (
           <p className="rounded-lg border border-rose-400 bg-rose-500/10 px-3 py-2 text-sm text-rose-100">
             Ocurrió un error al cargar la información. {globalError.message}
