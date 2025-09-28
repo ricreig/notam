@@ -24,7 +24,7 @@ primary_region = "sjc"
     path = '/health'
 
 [deploy]
-  release_command = "node dist/scripts/migrate.js && node dist/scripts/seed.js"
+release_command = "node dist/scripts/migrate.js && node dist/scripts/seed.js && node dist/scripts/update-notams.js"
 
 [[vm]]
   memory   = "1gb"

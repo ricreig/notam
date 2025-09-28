@@ -4,6 +4,30 @@ import { elements } from "../catalogs/elements";
 import mexicoAirports from "../data/mexico_airports.json";
 import mexicoNotams from "../data/mexico_notams.json";
 
+// Helper functions to automatically classify NOTAMs.
+/**
+ * Infer the element ID for a NOTAM based on its subject and condition.
+ * It scans the combined subject and condition strings for any of the
+ * keywords defined in the elements catalog. If no match is found it returns null.
+ */
+function inferElement(subject: string | null, condition: string | null): string | null {
+  const upper = `${subject ?? ""} ${condition ?? ""}`.toUpperCase();
+  const match = elements.find((element) =>
+    element.matchers.some((keyword) => upper.includes(keyword))
+  );
+  return match?.id ?? null;
+}
+
+/**
+ * Given an element ID, return the corresponding category ID from the catalog.
+ * Returns null when no element or matching category is found.
+ */
+function matchCategoryFromElement(elementId: string | null): string | null {
+  if (!elementId) return null;
+  const element = elements.find((item) => item.id === elementId);
+  return element?.categoryId ?? null;
+}
+
 type AirportSeed = {
   icao: string;
   name: string;
@@ -93,6 +117,15 @@ async function main() {
 
     console.log("Upserting FIR and airport NOTAMs");
     for (const notam of mexicoNotams as NotamSeed[]) {
+      // Automatically infer element and category if they are not provided.
+      // The seed data may not include these fields; classification here improves filtering.
+      const inferredElement = inferElement(notam.subject ?? null, notam.condition ?? null);
+      const inferredCategory = matchCategoryFromElement(inferredElement);
+
+      // Prefer existing element/category if present in the seed, otherwise use inferred values
+      const finalElement = notam.element ?? inferredElement;
+      const finalCategory = notam.category ?? inferredCategory;
+
       await pool.query(
         `INSERT INTO notams (
            icao,
@@ -146,8 +179,8 @@ async function main() {
           notam.lower_ft,
           notam.upper_ft,
           notam.coords_geojson ? JSON.stringify(notam.coords_geojson) : null,
-          notam.category,
-          notam.element,
+          finalCategory,
+          finalElement,
           notam.services,
           notam.severity,
           notam.relevance,
