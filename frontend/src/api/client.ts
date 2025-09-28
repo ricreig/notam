@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { Airport, Notam, Catalogs } from '../types/notam';
 
 export type NotamFilters = {
-  category?: string;
+  cat?: string;
   hours?: number;
   from?: string;
   to?: string;

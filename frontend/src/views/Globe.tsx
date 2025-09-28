@@ -117,7 +117,13 @@ export function GlobeView({
     return Array.from(byIcao.values());
   }, [notams, airports]);
 
-  const selectedNotam = useMemo(() => filteredNotams.find((item) => item.id === selectedNotamId) ?? null, [filteredNotams, selectedNotamId]);
+  const selectedNotam = useMemo(() => {
+    const inFiltered = filteredNotams.find((item) => item.id === selectedNotamId);
+    if (inFiltered) {
+      return inFiltered;
+    }
+    return notams.find((item) => item.id === selectedNotamId) ?? null;
+  }, [filteredNotams, notams, selectedNotamId]);
 
   const categories = useMemo(() => catalogs?.categories ?? [], [catalogs]);
   const categoryIndex = useMemo(() => new Map(categories.map((category) => [category.id, category])), [categories]);
