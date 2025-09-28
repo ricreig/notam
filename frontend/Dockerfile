@@ -5,7 +5,9 @@ RUN npm ci
 COPY . .
 # VITE lee variables que empiecen con VITE_ del entorno en build
 ARG VITE_API_URL
+ARG VITE_MAPBOX_TOKEN
 ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_MAPBOX_TOKEN=$VITE_MAPBOX_TOKEN
 RUN npm run build
 
 FROM nginx:1.27-alpine

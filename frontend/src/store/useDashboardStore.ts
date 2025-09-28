@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Airport, Catalogs, Notam } from '../types/notam';
-import { fetchAirports, fetchCatalogs, fetchNotams, NotamFilters, createAirport } from '../api/client';
+import type { Airport, Notam, Catalogs } from '../types/notam';
+import { fetchAirports, fetchCatalogs, fetchNotams, createAirport } from '../api/client';
+import type { NotamFilters } from '../api/client';
 
-const asArray = (v:any) => Array.isArray(v) ? v : Array.isArray(v?.data) ? v.data : [];
+const asArray = (v: any) => (Array.isArray(v) ? v : Array.isArray(v?.data) ? v.data : []);
 
 export interface ViewState {
   mode: 'globe' | 'list' | 'cards';
@@ -41,7 +42,7 @@ export const useDashboardStore = create<DashboardState>()(
     (set, get) => ({
       airports: [],
       notams: [],
-      catalogs: {},               // ← nunca null
+      catalogs: {} as Record<string, unknown>,
       loading: false,
       favorites: [],
       savedViews: {},
@@ -57,35 +58,50 @@ export const useDashboardStore = create<DashboardState>()(
       fetchInitial: async () => {
         set({ loading: true });
         const [airports, catalogs] = await Promise.all([fetchAirports(), fetchCatalogs()]);
-        set({ airports: asArray(airports), catalogs: catalogs ?? {}, loading: false });
+        set({
+		  airports: asArray(airports),
+		  catalogs: (catalogs as any) ?? {},
+		  loading: false,
+		});
         await get().refreshNotams({});
       },
 
       refreshNotams: async (filters = {}) => {
         set({ loading: true });
         const state = get();
-        const derived: NotamFilters = { ...filters };
-        if (state.view.categoryFilter) derived.cat = state.view.categoryFilter;
-        const notams = await fetchNotams(derived);
+        const derived: Partial<NotamFilters> & Record<string, any> = { ...filters };
+        if (state.view.categoryFilter) { derived.category = state.view.categoryFilter; derived.cat = state.view.categoryFilter; }
+        const notams = await fetchNotams(derived as NotamFilters);
         set({ notams: asArray(notams), loading: false });
       },
 
       addAirport: async (airport) => {
         const created = await createAirport(airport);
-        set((state) => ({ airports: [...state.airports.filter(a => a.icao !== created.icao), created] }));
+        set((state) => ({
+          airports: [...state.airports.filter((a) => a.icao !== created.icao), created],
+        }));
       },
 
       setMode: (mode) => set((s) => ({ view: { ...s.view, mode } })),
       setCategoryFilter: (category) => set((s) => ({ view: { ...s.view, categoryFilter: category } })),
       setTimeMode: (mode) => set((s) => ({ view: { ...s.view, timeMode: mode } })),
-      setAbsoluteRange: (range) => set((s) => ({ view: { ...s.view, absoluteRange: range, timeMode: 'absolute' } })),
-      setRelativeHours: (hours) => set((s) => ({ view: { ...s.view, relativeHours: hours, timeMode: 'relative' } })),
-      setDailyWindow: (window) => set((s) => ({ view: { ...s.view, dailyWindow: window, timeMode: 'daily' } })),
-      toggleFavorite: (id) => set((s) => ({
-        favorites: s.favorites.includes(id) ? s.favorites.filter(x => x !== id) : [...s.favorites, id],
-      })),
+      setAbsoluteRange: (range) =>
+        set((s) => ({ view: { ...s.view, absoluteRange: range, timeMode: 'absolute' } })),
+      setRelativeHours: (hours) =>
+        set((s) => ({ view: { ...s.view, relativeHours: hours, timeMode: 'relative' } })),
+      setDailyWindow: (window) =>
+        set((s) => ({ view: { ...s.view, dailyWindow: window, timeMode: 'daily' } })),
+      toggleFavorite: (id) =>
+        set((s) => ({
+          favorites: s.favorites.includes(id)
+            ? s.favorites.filter((x) => x !== id)
+            : [...s.favorites, id],
+        })),
       saveView: (name) => set((s) => ({ savedViews: { ...s.savedViews, [name]: s.view } })),
-      loadView: (name) => { const v = get().savedViews[name]; if (v) set({ view: v }); },
+      loadView: (name) => {
+        const v = get().savedViews[name];
+        if (v) set({ view: v });
+      },
     }),
     {
       name: 'notam-dashboard-store',

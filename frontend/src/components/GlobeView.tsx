@@ -13,6 +13,8 @@ const defaultView: ViewState = {
 };
 
 export default function GlobeView() {
+  const refreshNotams = useDashboardStore((s) => s.refreshNotams);
+  const setMode = useDashboardStore((s) => s.setMode);
   const airports = useDashboardStore((s) => s.airports);
   const notams = useDashboardStore((s) => s.notams);
   const [viewState, setViewState] = useState(defaultView);
@@ -34,7 +36,6 @@ export default function GlobeView() {
   );
 
   const token = import.meta.env.VITE_MAPBOX_TOKEN ?? '';
-
   if (!token) {
     return (
       <div className="flex h-80 items-center justify-center rounded-lg border border-slate-800 bg-slate-900/60 text-sm text-slate-400">
@@ -51,6 +52,26 @@ export default function GlobeView() {
         {...viewState}
         onMove={(evt) => setViewState(evt.viewState)}
         style={{ width: '100%', height: '100%' }}
+        interactiveLayerIds={['airports-heat']}
+        onClick={(e) => {
+          // Prefer feature from interactive layer (react-map-gl)
+          const f = (e.features && e.features[0]) as any;
+          let icao = f?.properties?.icao as string | undefined;
+
+          // Fallback: queryRenderedFeatures
+          if (!icao) {
+            const map = (e.target as any).getMap?.() || (e.target as any);
+            if (map?.queryRenderedFeatures) {
+              const feats = map.queryRenderedFeatures(e.point, { layers: ['airports-heat'] });
+              icao = feats?.[0]?.properties?.icao as string | undefined;
+            }
+          }
+
+          if (icao) {
+            refreshNotams({ aerodrome: icao });
+            setMode('list');
+          }
+        }}
       >
         <Source id="airports" type="geojson" data={geojson}>
           <Layer

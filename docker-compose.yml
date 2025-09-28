@@ -1,47 +1,57 @@
-version: '3.9'
-
 services:
   db:
     image: postgres:15-alpine
-    restart: always
     environment:
-      POSTGRES_DB: notam
-      POSTGRES_USER: notam
-      POSTGRES_PASSWORD: notam
-    ports:
-      - '5432:5432'
+      POSTGRES_DB: ${DB_NAME:-notam}
+      POSTGRES_USER: ${DB_USER:-notam}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-notam}
     volumes:
       - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-notam} -d ${DB_NAME:-notam}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   api:
+    image: notam-api:latest
     build:
       context: ./api
-      dockerfile: Dockerfile
-    env_file: .env
-    environment:
-      - PORT=3001
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-notam}
+      DB_PASSWORD: ${DB_PASSWORD:-notam}
+      DB_NAME: ${DB_NAME:-notam}
+      DATABASE_URL: postgres://${DB_USER:-notam}:${DB_PASSWORD:-notam}@db:5432/${DB_NAME:-notam}
+      CORS_ORIGIN: "*"
     ports:
-      - '3001:3001'
-    volumes:
-      - ./api:/app
-    command: npm run dev
+      - "3001:3001"
+    command: ["node", "dist/server.js"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
 
   frontend:
+    image: notam-frontend:latest
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-    env_file: .env
-    environment:
-      - VITE_API_URL=http://api:3001
+      args:
+        VITE_API_URL: http://api:3001
+        VITE_MAPBOX_TOKEN: pk.eyJ1IjoicmljcmVpZyIsImEiOiJjbWcwZ2gyYm4wZDk5MmlvamdpbWR6cTA5In0.IsmjO6d-ClnQ3SybCESyCQ
     depends_on:
       - api
     ports:
-      - '5173:5173'
-    volumes:
-      - ./frontend:/app
-    command: npm run dev -- --host 0.0.0.0
+      - "5173:80"
 
 volumes:
   db-data:

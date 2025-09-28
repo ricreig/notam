@@ -4,6 +4,7 @@ primary_region = "sjc"
 [build]
   [build.args]
     VITE_API_URL = "https://notam-api-ctareig.fly.dev"
+	VITE_MAPBOX_TOKEN = "pk.eyJ1IjoicmljcmVpZyIsImEiOiJjbWcwZ2gyYm4wZDk5MmlvamdpbWR6cTA5In0.IsmjO6d-ClnQ3SybCESyCQ"
 
 [http_service]
   internal_port = 8080

@@ -42,11 +42,35 @@ export default function App() {
         ) : (
           <>
             {view.mode === 'globe' && <GlobeView />}
-            {view.mode !== 'globe' && (
+            {view.mode === 'cards' && (
               <div className="grid gap-6">
                 {notamsByAirport.map(({ airport, notams }) => (
                   <AirportCard key={airport.icao} airport={airport} notams={notams} />
                 ))}
+              </div>
+            )}
+            {view.mode === 'list' && (
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr>
+                      <th className="p-2 text-left">ID</th>
+                      <th className="p-2 text-left">ICAO</th>
+                      <th className="p-2 text-left">Número</th>
+                      <th className="p-2 text-left">Vigencia</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {notams.map((n:any) => (
+                      <tr key={n.id} className="border-t border-slate-800">
+                        <td className="p-2">{n.id}</td>
+                        <td className="p-2">{n.icao}</td>
+                        <td className="p-2">{n.number ?? '—'}</td>
+                        <td className="p-2">{(n.start_at ?? '—')} → {(n.end_at ?? '—')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
             <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">

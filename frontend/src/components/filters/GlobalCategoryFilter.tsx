@@ -6,6 +6,7 @@ export default function GlobalCategoryFilter() {
   const catalogs = useDashboardStore((s) => s.catalogs);
   const categoryFilter = useDashboardStore((s) => s.view.categoryFilter);
   const setCategoryFilter = useDashboardStore((s) => s.setCategoryFilter);
+  const refreshNotams = useDashboardStore((s) => s.refreshNotams);
 
   // Asegura arreglo tipado
   const categories: Category[] = Array.isArray((catalogs as any)?.categories)
@@ -15,6 +16,7 @@ export default function GlobalCategoryFilter() {
   const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const v = e.target.value || null;
     setCategoryFilter(v);
+    refreshNotams({});
   };
 
   return (
