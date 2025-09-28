@@ -26,7 +26,7 @@ npm test
 # run SQL migrations
 npm run migrate
 
-# seed catalog tables
+# seed catalog tables + Mexico FIR baseline data
 npm run seed
 ```
 

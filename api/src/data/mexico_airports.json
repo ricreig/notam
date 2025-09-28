@@ -1,0 +1,812 @@
+[
+  {
+    "icao": "MMAA",
+    "name": "General Juan N Alvarez International Airport",
+    "city": "Acapulco",
+    "lat": 16.7570991516,
+    "lon": -99.7539978027,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMAN",
+    "name": "Del Norte International Airport",
+    "city": "",
+    "lat": 25.8656005859,
+    "lon": -100.2369995117,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMAS",
+    "name": "Jesus Teran International Airport",
+    "city": "Aguascalientes",
+    "lat": 21.7056007385,
+    "lon": -102.318000793,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMBT",
+    "name": "Bahias de Huatulco International Airport",
+    "city": "Huatulco",
+    "lat": 15.7753000259,
+    "lon": -96.2626037598,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMCA",
+    "name": "Cananea Airport",
+    "city": "",
+    "lat": 31.0661501549,
+    "lon": -110.097877979,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMCB",
+    "name": "General Mariano Matamoros Airport",
+    "city": "",
+    "lat": 18.8348007202,
+    "lon": -99.2612991333,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMCC",
+    "name": "Ciudad Acuna New International Airport",
+    "city": "Ciudad Acuna",
+    "lat": 29.3328990936,
+    "lon": -101.0989990234,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMCE",
+    "name": "Ciudad del Carmen International Airport",
+    "city": "Ciudad del Carmen",
+    "lat": 18.6536998749,
+    "lon": -91.7990036011,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMCG",
+    "name": "Nuevo Casas Grandes Airport",
+    "city": "",
+    "lat": 30.3973999023,
+    "lon": -107.875,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMCL",
+    "name": "Federal de Bachigualato International Airport",
+    "city": "Culiacan",
+    "lat": 24.7644996643,
+    "lon": -107.474998474,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMCM",
+    "name": "Chetumal International Airport",
+    "city": "Chetumal",
+    "lat": 18.504699707,
+    "lon": -88.3267974854,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMCN",
+    "name": "Ciudad Obregon International Airport",
+    "city": "Ciudad Obregon",
+    "lat": 27.3925991058,
+    "lon": -109.8330001831,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMCO",
+    "name": "Comitan Airport",
+    "city": "",
+    "lat": 16.176700592,
+    "lon": -92.0505981445,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMCP",
+    "name": "Ingeniero Alberto Acuna Ongay International Airport",
+    "city": "Campeche",
+    "lat": 19.8167991638,
+    "lon": -90.5002975464,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMCS",
+    "name": "Abraham Gonzalez International Airport",
+    "city": "Ciudad Juarez",
+    "lat": 31.636100769,
+    "lon": -106.4290008545,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMCT",
+    "name": "Chichen Itza International Airport",
+    "city": "",
+    "lat": 20.6413002014,
+    "lon": -88.4461975098,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMCU",
+    "name": "General Roberto Fierro Villalobos International Airport",
+    "city": "Chihuahua",
+    "lat": 28.7028999329,
+    "lon": -105.964996338,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMCV",
+    "name": "General Pedro Jose Mendez International Airport",
+    "city": "Ciudad Victoria",
+    "lat": 23.7033004761,
+    "lon": -98.9564971924,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMCY",
+    "name": "Captain Rogelio Castillo National Airport",
+    "city": "Celaya",
+    "lat": 20.545999527,
+    "lon": -100.8870010376,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMCZ",
+    "name": "Cozumel International Airport",
+    "city": "Cozumel",
+    "lat": 20.5223999023,
+    "lon": -86.9255981445,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMDA",
+    "name": "Ciudad Constitucion Airport",
+    "city": "Ciudad Constitucion",
+    "lat": 25.0538005829,
+    "lon": -111.6149978638,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMDM",
+    "name": "Ciudad Mante National Airport",
+    "city": "Ciudad Mante",
+    "lat": 22.7431774139,
+    "lon": -99.0173721313,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMDO",
+    "name": "General Guadalupe Victoria International Airport",
+    "city": "Durango",
+    "lat": 24.1242008209,
+    "lon": -104.527999878,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMEP",
+    "name": "Amado Nervo National Airport",
+    "city": "Tepic",
+    "lat": 21.419500351,
+    "lon": -104.8430023193,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMES",
+    "name": "Ensenada Airport",
+    "city": "",
+    "lat": 31.79529953,
+    "lon": -116.6029968262,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMFO",
+    "name": "Mazatlán Oceanic FIR",
+    "city": "Mazatlán",
+    "lat": 23.5,
+    "lon": -107.5,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMFR",
+    "name": "Mexico FIR",
+    "city": "Ciudad de México",
+    "lat": 21.0,
+    "lon": -101.0,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMGL",
+    "name": "Don Miguel Hidalgo Y Costilla International Airport",
+    "city": "Guadalajara",
+    "lat": 20.5217990875,
+    "lon": -103.3109970093,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMGM",
+    "name": "General Jose Maria Yanez International Airport",
+    "city": "Guaymas",
+    "lat": 27.9689998627,
+    "lon": -110.9250030518,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMGR",
+    "name": "Guerrero Negro Airport",
+    "city": "Guerrero Negro",
+    "lat": 28.0261001587,
+    "lon": -114.0240020752,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMHC",
+    "name": "Tehuacan Airport",
+    "city": "",
+    "lat": 18.4972000122,
+    "lon": -97.4198989868,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMHO",
+    "name": "General Ignacio P. Garcia International Airport",
+    "city": "Hermosillo",
+    "lat": 29.0958995819,
+    "lon": -111.047996521,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMIA",
+    "name": "Lic. Miguel de la Madrid Airport",
+    "city": "Colima",
+    "lat": 19.2770004272,
+    "lon": -103.577003479,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMIM",
+    "name": "Isla Mujeres Airport",
+    "city": "",
+    "lat": 21.2450008392,
+    "lon": -86.7399978638,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMIO",
+    "name": "Plan De Guadalupe International Airport",
+    "city": "Saltillo",
+    "lat": 25.5494995117,
+    "lon": -100.9290008545,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMIT",
+    "name": "Ixtepec Airport",
+    "city": "",
+    "lat": 16.449300766,
+    "lon": -95.0936965942,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMJA",
+    "name": "El Lencero Airport",
+    "city": "Xalapa",
+    "lat": 19.4750995636,
+    "lon": -96.7975006104,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMJC",
+    "name": "Atizapan De Zaragoza Airport",
+    "city": "",
+    "lat": 19.5748004913,
+    "lon": -99.2888031006,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMLC",
+    "name": "Lazaro Cardenas Airport",
+    "city": "Lazaro Cardenas",
+    "lat": 18.0016994476,
+    "lon": -102.221000671,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMLM",
+    "name": "Valle del Fuerte International Airport",
+    "city": "Los Mochis",
+    "lat": 25.6851997375,
+    "lon": -109.081001282,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMLO",
+    "name": "Del Bajio International Airport",
+    "city": "Silao",
+    "lat": 20.9934997559,
+    "lon": -101.481002808,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMLP",
+    "name": "Manuel Marquez de Leon International Airport",
+    "city": "La Paz",
+    "lat": 24.0727005005,
+    "lon": -110.361999512,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMLT",
+    "name": "Loreto International Airport",
+    "city": "Loreto",
+    "lat": 25.989200592,
+    "lon": -111.3479995728,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMMA",
+    "name": "General Servando Canales International Airport",
+    "city": "Matamoros",
+    "lat": 25.7698993683,
+    "lon": -97.5252990723,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMMD",
+    "name": "Licenciado Manuel Crescencio Rejon Int Airport",
+    "city": "Merida",
+    "lat": 20.9370002747,
+    "lon": -89.657699585,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMMG",
+    "name": "Mulege Airport",
+    "city": "Mulege",
+    "lat": 26.897310257,
+    "lon": -111.9575500488,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMML",
+    "name": "General Rodolfo Sanchez Taboada International Airport",
+    "city": "Mexicali",
+    "lat": 32.6305999756,
+    "lon": -115.241996765,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMMM",
+    "name": "General Francisco J. Mujica International Airport",
+    "city": "Morelia",
+    "lat": 19.849899292,
+    "lon": -101.025001526,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMMT",
+    "name": "Minatitlan/Coatzacoalcos National Airport",
+    "city": "Minatitlan",
+    "lat": 18.1033992767,
+    "lon": -94.5807037354,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMMV",
+    "name": "Monclova International Airport",
+    "city": "",
+    "lat": 26.9556999207,
+    "lon": -101.4700012207,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMMX",
+    "name": "Licenciado Benito Juarez International Airport",
+    "city": "Mexico City",
+    "lat": 19.4363002777,
+    "lon": -99.0720977783,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMMY",
+    "name": "General Mariano Escobedo International Airport",
+    "city": "Monterrey",
+    "lat": 25.7784996033,
+    "lon": -100.107002258,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMMZ",
+    "name": "General Rafael Buelna International Airport",
+    "city": "Mazatlan",
+    "lat": 23.1613998413,
+    "lon": -106.26599884,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMNG",
+    "name": "Nogales International Airport",
+    "city": "",
+    "lat": 31.2261009216,
+    "lon": -110.9759979248,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMNL",
+    "name": "Quetzalcoatl International Airport",
+    "city": "Nuevo Laredo",
+    "lat": 27.4438991547,
+    "lon": -99.5705032349,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMOX",
+    "name": "Xoxocotlan International Airport",
+    "city": "Oaxaca",
+    "lat": 16.9999008179,
+    "lon": -96.726600647,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMPA",
+    "name": "El Tajin National Airport",
+    "city": "Poza Rica",
+    "lat": 20.6026992798,
+    "lon": -97.4608001709,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMPB",
+    "name": "Hermanos Serdan International Airport",
+    "city": "Puebla",
+    "lat": 19.1581001282,
+    "lon": -98.3713989258,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMPE",
+    "name": "Puerto Penasco International Airport",
+    "city": "Puerto Penasco",
+    "lat": 31.356202302,
+    "lon": -113.525676727,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMPG",
+    "name": "Piedras Negras International Airport",
+    "city": "",
+    "lat": 28.6273994446,
+    "lon": -100.5350036621,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMPL",
+    "name": "Punta Colorada Airport",
+    "city": "La Ribera",
+    "lat": 23.575011,
+    "lon": -109.535826,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMPN",
+    "name": "Licenciado y General Ignacio Lopez Rayon Airport",
+    "city": "",
+    "lat": 19.3966999054,
+    "lon": -102.0390014648,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMPQ",
+    "name": "Palenque International Airport",
+    "city": "",
+    "lat": 17.5333995819,
+    "lon": -91.9844970703,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMPR",
+    "name": "Licenciado Gustavo Diaz Ordaz International Airport",
+    "city": "Puerto Vallarta",
+    "lat": 20.6800994873,
+    "lon": -105.2539978027,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMPS",
+    "name": "Puerto Escondido International Airport",
+    "city": "Puerto Escondido",
+    "lat": 15.8768997192,
+    "lon": -97.0891036987,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMQT",
+    "name": "Queretaro Intercontinental Airport",
+    "city": "Queretaro",
+    "lat": 20.6173000336,
+    "lon": -100.185997009,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMRX",
+    "name": "General Lucio Blanco International Airport",
+    "city": "Reynosa",
+    "lat": 26.0088996887,
+    "lon": -98.2285003662,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMSC",
+    "name": "San Cristobal De Las Casas Airport",
+    "city": "",
+    "lat": 16.6902999878,
+    "lon": -92.5300979614,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMSD",
+    "name": "Los Cabos International Airport",
+    "city": "San Jose del Cabo",
+    "lat": 23.1518001556,
+    "lon": -109.7210006714,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMSF",
+    "name": "San Felipe International Airport",
+    "city": "",
+    "lat": 30.9302005768,
+    "lon": -114.8089981079,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMSL",
+    "name": "Cabo San Lucas International Airport",
+    "city": "Cabo San Lucas",
+    "lat": 22.9477005005,
+    "lon": -109.93699646,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMSM",
+    "name": "Felipe Angeles International Airport",
+    "city": "Santa Lucia",
+    "lat": 19.756667,
+    "lon": -99.015278,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMSP",
+    "name": "Ponciano Arriaga International Airport",
+    "city": "San Luis Potosi",
+    "lat": 22.2542991638,
+    "lon": -100.930999756,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMTA",
+    "name": "Tlaxcala Airport",
+    "city": "",
+    "lat": 19.5380001068,
+    "lon": -98.173500061,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMTC",
+    "name": "Francisco Sarabia International Airport",
+    "city": "Torreon",
+    "lat": 25.5683002472,
+    "lon": -103.411003113,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMTG",
+    "name": "Angel Albino Corzo International Airport",
+    "city": "Tuxtla Gutierrez",
+    "lat": 16.5636005402,
+    "lon": -93.0224990845,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMTJ",
+    "name": "General Abelardo L. Rodriguez International Airport",
+    "city": "Tijuana",
+    "lat": 32.5410995483,
+    "lon": -116.9700012207,
+    "base": true,
+    "fir": "MMFO"
+  },
+  {
+    "icao": "MMTL",
+    "name": "Felipe Carrillo Puerto International Airport",
+    "city": "Tulum",
+    "lat": 20.166667,
+    "lon": -87.666667,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMTM",
+    "name": "General Francisco Javier Mina International Airport",
+    "city": "Tampico",
+    "lat": 22.2964000702,
+    "lon": -97.8658981323,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMTN",
+    "name": "Tamuin Airport",
+    "city": "",
+    "lat": 22.0382995605,
+    "lon": -98.8065032959,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMTO",
+    "name": "Licenciado Adolfo Lopez Mateos International Airport",
+    "city": "Toluca",
+    "lat": 19.3370990753,
+    "lon": -99.5660018921,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMTP",
+    "name": "Tapachula International Airport",
+    "city": "Tapachula",
+    "lat": 14.7943000793,
+    "lon": -92.3700027466,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMTX",
+    "name": "Tuxpan Airport",
+    "city": "",
+    "lat": 19.5839004517,
+    "lon": -103.3840026855,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMUN",
+    "name": "Cancun International Airport",
+    "city": "Cancun",
+    "lat": 21.0365009308,
+    "lon": -86.8770980835,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMVA",
+    "name": "Carlos Rovirosa Perez International Airport",
+    "city": "Villahermosa",
+    "lat": 17.9969997406,
+    "lon": -92.8173980713,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMVR",
+    "name": "General Heriberto Jara International Airport",
+    "city": "Veracruz",
+    "lat": 19.1459007263,
+    "lon": -96.1873016357,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMZC",
+    "name": "General Leobardo C. Ruiz International Airport",
+    "city": "Zacatecas",
+    "lat": 22.8971004486,
+    "lon": -102.68699646,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMZH",
+    "name": "Ixtapa Zihuatanejo International Airport",
+    "city": "Ixtapa",
+    "lat": 17.601600647,
+    "lon": -101.460998535,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMZM",
+    "name": "Zamora Airport",
+    "city": "",
+    "lat": 20.0450000763,
+    "lon": -102.2760009766,
+    "base": true,
+    "fir": "MMFR"
+  },
+  {
+    "icao": "MMZO",
+    "name": "Playa De Oro International Airport",
+    "city": "Manzanillo",
+    "lat": 19.1448001862,
+    "lon": -104.558998108,
+    "base": true,
+    "fir": "MMFR"
+  }
+]
