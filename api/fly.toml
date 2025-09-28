@@ -3,8 +3,8 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'notam-api-ctareig'
-primary_region = 'sjc'
+app = "notam-api-ctareig"
+primary_region = "sjc"
 
 [build]
 
@@ -27,6 +27,6 @@ primary_region = 'sjc'
   release_command = "node dist/scripts/migrate.js && node dist/scripts/seed.js"
 
 [[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
-  cpus = 1
+  memory   = "1gb"
+  cpu_kind = "shared"
+  cpus     = 1

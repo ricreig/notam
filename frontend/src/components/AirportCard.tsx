@@ -10,18 +10,15 @@ interface AirportCardProps {
 }
 
 export default function AirportCard({ airport, notams }: AirportCardProps) {
-  const toggleFavorite = useDashboardStore((state) => state.toggleFavorite);
-  const favorites = useDashboardStore((state) => state.favorites);
+  const toggleFavorite = useDashboardStore((s) => s.toggleFavorite);
+  const favorites = useDashboardStore((s) => s.favorites);
 
   const chips = useMemo(() => {
-    const statusCounts = notams.reduce(
-      (acc, notam) => {
-        const status = notam.status.toUpperCase();
-        acc[status] = (acc[status] ?? 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
+    const statusCounts = (notams ?? []).reduce<Record<string, number>>((acc, n) => {
+      const status = String((n as any).status ?? '').toUpperCase();
+      acc[status] = (acc[status] ?? 0) + 1;
+      return acc;
+    }, {});
     return Object.entries(statusCounts).map(([status, count]) => ({ status, count }));
   }, [notams]);
 
@@ -33,7 +30,7 @@ export default function AirportCard({ airport, notams }: AirportCardProps) {
           <p className="text-sm text-slate-400">{airport.name}</p>
         </div>
         <div className="flex gap-2">
-          {chips.map((chip) => (
+          {(chips ?? []).map((chip) => (
             <span
               key={chip.status}
               className={clsx(
@@ -49,46 +46,43 @@ export default function AirportCard({ airport, notams }: AirportCardProps) {
           ))}
         </div>
       </header>
+
       <div className="space-y-4">
-        {notams.map((notam) => (
+        {(notams ?? []).map((n) => (
           <article
-            key={notam.id}
+            key={(n as any).id}
             className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 shadow-inner shadow-slate-900/30"
           >
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h3 className="font-mono text-slate-200">{notam.number}</h3>
-                <p className="text-sm text-slate-400">{notam.subject ?? notam.text.slice(0, 60)}</p>
+                <h3 className="font-mono text-slate-200">{(n as any).number}</h3>
+                <p className="text-sm text-slate-400">{(n as any).subject ?? String((n as any).text ?? '').slice(0, 60)}</p>
               </div>
               <button
                 className={clsx(
                   'rounded-full border px-3 py-1 text-xs uppercase transition-colors',
-                  favorites.includes(notam.id)
+                  favorites.includes((n as any).id)
                     ? 'border-amber-400 text-amber-300'
                     : 'border-slate-700 text-slate-300 hover:border-amber-300 hover:text-amber-200',
                 )}
-                onClick={() => toggleFavorite(notam.id)}
+                onClick={() => toggleFavorite((n as any).id)}
               >
-                {favorites.includes(notam.id) ? 'Favorited' : 'Favorite'}
+                {favorites.includes((n as any).id) ? 'Favorited' : 'Favorite'}
               </button>
             </div>
             <div className="mt-3 grid gap-3 text-xs text-slate-400 md:grid-cols-2">
-              <span>
-                <strong className="text-slate-300">Severity:</strong> {notam.severity}
-              </span>
-              <span>
-                <strong className="text-slate-300">Relevance:</strong> {notam.relevance}
-              </span>
+              <span><strong className="text-slate-300">Severity:</strong> {(n as any).severity}</span>
+              <span><strong className="text-slate-300">Relevance:</strong> {(n as any).relevance}</span>
               <span>
                 <strong className="text-slate-300">Start:</strong>{' '}
-                {notam.start_at ? `${format(new Date(notam.start_at), 'dd MMM HH:mm')}Z` : 'N/A'}
+                {(n as any).start_at ? `${format(new Date((n as any).start_at), 'dd MMM HH:mm')}Z` : 'N/A'}
               </span>
               <span>
                 <strong className="text-slate-300">End:</strong>{' '}
-                {notam.end_at ? `${format(new Date(notam.end_at), 'dd MMM HH:mm')}Z` : 'N/A'}
+                {(n as any).end_at ? `${format(new Date((n as any).end_at), 'dd MMM HH:mm')}Z` : 'N/A'}
               </span>
             </div>
-            <p className="mt-2 text-sm leading-relaxed text-slate-200">{notam.text}</p>
+            <p className="mt-2 text-sm leading-relaxed text-slate-200">{(n as any).text}</p>
           </article>
         ))}
       </div>

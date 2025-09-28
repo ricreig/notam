@@ -26,7 +26,7 @@ This launches:
 - **api** – Express server on `http://localhost:3001`
 - **frontend** – Vite dev server on `http://localhost:5173`
 
-Run database migrations and seed catalogs once the containers are up. The seed now loads the full set of Mexican FIR airports and baseline NOTAMs **en la base que tengas configurada en las variables `DATABASE_URL`/`DB_*`** (puede ser el contenedor `db` o una instancia externa):
+Run database migrations and seed catalogs once the containers are up. The seed now loads the full set of Mexican FIR airports and baseline NOTAMs:
 
 ```bash
 docker compose exec api npm run migrate

@@ -13,27 +13,20 @@ const defaultView: ViewState = {
 };
 
 export default function GlobeView() {
-  const airports = useDashboardStore((state) => state.airports);
-  const notams = useDashboardStore((state) => state.notams);
+  const airports = useDashboardStore((s) => s.airports);
+  const notams = useDashboardStore((s) => s.notams);
   const [viewState, setViewState] = useState(defaultView);
 
   const geojson = useMemo(
     () => ({
       type: 'FeatureCollection' as const,
-      features: airports.map((airport) => {
-        const airportNotams = notams.filter((notam) => notam.icao === airport.icao);
-        const maxSeverity = airportNotams.reduce((max, notam) => Math.max(max, notam.severity), 0);
+      features: (airports ?? []).map((a) => {
+        const aNotams = (notams ?? []).filter((n) => (n as any).icao === a.icao);
+        const maxSeverity = aNotams.reduce((m, n) => Math.max(m, (n as any).severity ?? 0), 0);
         return {
           type: 'Feature' as const,
-          geometry: {
-            type: 'Point' as const,
-            coordinates: [airport.lon, airport.lat],
-          },
-          properties: {
-            icao: airport.icao,
-            count: airportNotams.length,
-            severity: maxSeverity,
-          },
+          geometry: { type: 'Point' as const, coordinates: [a.lon, a.lat] },
+          properties: { icao: a.icao, count: aNotams.length, severity: maxSeverity },
         };
       }),
     }),

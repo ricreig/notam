@@ -118,15 +118,14 @@ Esta guía explica, paso a paso y sin asumir conocimientos previos, cómo prepar
 2. **Verifica el archivo `fly.toml`**: ya viene configurado con el nombre de la app `notam-api-ctareig`, región `sjc` y un `release_command` que corre migraciones y seeds automáticamente.
 
 3. **Base de datos en Fly** (elige una opción):
-   > El backend **no crea un PostgreSQL interno**. Tanto las migraciones como el `seed` se conectan usando las variables `DATABASE_URL`/`DB_*` que tengas configuradas. Si defines una base externa, todo el proceso se ejecutará contra esa instancia.
-
    - **Usar Fly Postgres administrado** (recomendado si aún no existe):
      ```powershell
      fly postgres create --name notam-postgres --initial-cluster-size 1 --vm-size shared-cpu-1x --volume-size 10
      fly postgres attach notam-postgres
      ```
      El comando `attach` inyecta `DATABASE_URL`, `DB_HOST`, `DB_USER`, etc. como secretos.
-   - **Usar una base externa**: añade los valores manualmente con `fly secrets set` (ver paso 4). Verifica previamente que la base exista y que el usuario tenga permisos para crear tablas, ya que el `release_command` únicamente ejecuta migraciones y seeds sobre la conexión indicada.
+
+   - **Usar una base externa**: añade los valores manualmente con `fly secrets set` (ver paso 4).
 
 4. **Configura secretos obligatorios**:
 
