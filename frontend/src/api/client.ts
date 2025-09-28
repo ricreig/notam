@@ -1,19 +1,12 @@
 import axios from 'axios';
-import type { Airport } from '../types/notam';
+import type { Airport, Notam, Catalogs } from '../types/notam';
 
-/** Severidad opcional para filtros de NOTAM */
-export type NotamSeverity = 'CRITICAL' | 'MAJOR' | 'MINOR';
-
-/** Filtros soportados por /notams */
 export type NotamFilters = {
-  fir?: string;
-  aerodrome?: string;
-  qcode?: string[];
-  severity?: NotamSeverity[];
-  activeOnly?: boolean;
-  search?: string;
+  category?: string;
+  hours?: number;
   from?: string;
   to?: string;
+  icao?: string;
 };
 
 const API_BASE =
@@ -27,23 +20,24 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
 });
 
+function unwrapData<T>(payload: unknown): T {
+  if (payload && typeof payload === 'object' && 'data' in (payload as any)) {
+    return (payload as any).data as T;
+  }
+  return payload as T;
+}
+
 export async function fetchAirports(): Promise<Airport[]> {
-  const { data } = await api.get<Airport[]>('/airports');
-  return data;
+  const { data } = await api.get('/airports');
+  return unwrapData<Airport[]>(data) ?? [];
 }
 
-export async function fetchCatalogs(): Promise<unknown> {
+export async function fetchCatalogs(): Promise<Catalogs> {
   const { data } = await api.get('/catalogs');
-  // acepta ambos formatos
-  return (data && typeof data === 'object' && 'data' in data) ? (data as any).data : data;
+  return unwrapData<Catalogs>(data);
 }
 
-export async function fetchNotams(params: NotamFilters): Promise<unknown> {
+export async function fetchNotams(params: NotamFilters): Promise<Notam[]> {
   const { data } = await api.get('/notams', { params });
-  return data;
-}
-
-export async function createAirport(airport: Airport): Promise<Airport> {
-  const { data } = await api.post<Airport>('/airports', airport);
-  return data;
+  return unwrapData<Notam[]>(data) ?? [];
 }
