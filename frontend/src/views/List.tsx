@@ -5,6 +5,8 @@ import type { Airport, Catalogs, Notam } from '../types/notam';
 import type { StationSuggestion } from '../components/StationSearch';
 import CategoryChip from '../components/CategoryChip';
 import SeverityBadge from '../components/SeverityBadge';
+import { formatUtcRangeWithSuffix } from '../utils/datetime';
+import { extractNotamSummary, getNotamSummarySnippet } from '../utils/notamText';
 import { mapSeverity } from '../utils/severity';
 
 interface ListViewProps {
@@ -22,30 +24,10 @@ interface ListViewProps {
 
 type SortKey = 'severity' | 'validity';
 
-function formatUtc(value?: string | null) {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-  return `${date.toLocaleString('es-MX', {
-    timeZone: 'UTC',
-    hour12: false,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })} UTC`;
-}
-
 function buildTooltip(notam: Notam) {
-  const summary = notam.condition || notam.subject || extractE(notam.text);
+  const summary = extractNotamSummary(notam);
   const qLine = notam.q_line ? `\nQ-line: ${notam.q_line}` : '';
   return `${summary ?? ''}${qLine}`.trim();
-}
-
-function extractE(text: string) {
-  const match = /E\)([\s\S]*)/i.exec(text ?? '');
-  return match && match[1] ? match[1].trim() : text;
 }
 
 export function ListView({
@@ -129,6 +111,7 @@ export function ListView({
                 <th className="px-4 py-3 text-left">NOTAM</th>
                 <th className="px-4 py-3 text-left">Estación</th>
                 <th className="px-4 py-3 text-left">Categoría</th>
+                <th className="px-4 py-3 text-left">Resumen</th>
                 <th className="px-4 py-3 text-left">
                   <button
                     type="button"
@@ -169,8 +152,11 @@ export function ListView({
                     <td className="px-4 py-3">
                       {category ? <CategoryChip label={category.label} color={category.color} /> : <span className="text-xs text-slate-400">Sin categoría</span>}
                     </td>
+                    <td className="px-4 py-3 text-xs text-slate-300" title={tooltip}>
+                      {getNotamSummarySnippet(notam, 160) || 'Sin descripción disponible'}
+                    </td>
                     <td className="px-4 py-3 text-sm text-slate-200">
-                      {`${formatUtc(notam.start_at)} → ${formatUtc(notam.end_at)}`}
+                      {formatUtcRangeWithSuffix(notam.start_at, notam.end_at)}
                     </td>
                     <td className="px-4 py-3">
                       <SeverityBadge value={notam.severity} className="text-xs" />

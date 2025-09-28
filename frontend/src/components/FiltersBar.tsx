@@ -79,62 +79,77 @@ export function FiltersBar({ filters, onChange, catalogs, onClear, stationSugges
                   ? 'bg-sky-500 text-white shadow shadow-sky-500/40'
                   : 'text-slate-200 hover:bg-slate-800',
               )}
+              aria-pressed={filters.mode === option.value}
             >
               {option.label}
             </button>
           ))}
         </div>
         {filters.mode === 'RELATIVE' && (
-          <div className="flex flex-wrap items-center gap-2">
-            {RELATIVE_HOURS_OPTIONS.map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => onChange({ ...filters, hours: option })}
-                className={clsx(
-                  'rounded-lg border px-3 py-2 text-xs font-semibold uppercase tracking-wide transition-colors',
-                  filters.hours === option
-                    ? 'border-sky-400 bg-sky-500/20 text-sky-200'
-                    : 'border-slate-700 bg-slate-900 hover:border-slate-500',
-                )}
-              >
-                {option}h
-              </button>
-            ))}
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {RELATIVE_HOURS_OPTIONS.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => onChange({ ...filters, hours: option })}
+                  className={clsx(
+                    'rounded-lg border px-3 py-2 text-xs font-semibold uppercase tracking-wide transition-colors',
+                    filters.hours === option
+                      ? 'border-sky-400 bg-sky-500/20 text-sky-200'
+                      : 'border-slate-700 bg-slate-900 hover:border-slate-500',
+                  )}
+                  aria-pressed={filters.hours === option}
+                >
+                  {option}h
+                </button>
+              ))}
+            </div>
+            <p className="text-[11px] text-slate-400">
+              Mostrando NOTAM publicados en las últimas {filters.hours ?? DEFAULT_FILTERS.hours} horas (UTC).
+            </p>
           </div>
         )}
         {filters.mode === 'ABSOLUTE' && (
-          <div className="flex flex-wrap gap-3 text-xs">
-            <label className="flex flex-col">
-              <span className="font-semibold uppercase tracking-wide text-slate-400">Desde (UTC)</span>
-              <input
-                type="datetime-local"
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                value={filters.from ? filters.from.slice(0, 16) : ''}
-                onChange={(event) => {
-                  const iso = event.target.value ? new Date(event.target.value).toISOString() : null;
-                  onChange({ ...filters, from: iso, mode: 'ABSOLUTE' });
-                }}
-              />
-            </label>
-            <label className="flex flex-col">
-              <span className="font-semibold uppercase tracking-wide text-slate-400">Hasta (UTC)</span>
-              <input
-                type="datetime-local"
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                value={filters.to ? filters.to.slice(0, 16) : ''}
-                onChange={(event) => {
-                  const iso = event.target.value ? new Date(event.target.value).toISOString() : null;
-                  onChange({ ...filters, to: iso, mode: 'ABSOLUTE' });
-                }}
-              />
-            </label>
+          <div className="flex flex-col gap-2 text-xs">
+            <div className="flex flex-wrap gap-3">
+              <label className="flex flex-col">
+                <span className="font-semibold uppercase tracking-wide text-slate-400">Desde (UTC)</span>
+                <input
+                  type="datetime-local"
+                  className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  value={filters.from ? filters.from.slice(0, 16) : ''}
+                  onChange={(event) => {
+                    const iso = event.target.value ? new Date(event.target.value).toISOString() : null;
+                    onChange({ ...filters, from: iso, mode: 'ABSOLUTE' });
+                  }}
+                />
+              </label>
+              <label className="flex flex-col">
+                <span className="font-semibold uppercase tracking-wide text-slate-400">Hasta (UTC)</span>
+                <input
+                  type="datetime-local"
+                  className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  value={filters.to ? filters.to.slice(0, 16) : ''}
+                  onChange={(event) => {
+                    const iso = event.target.value ? new Date(event.target.value).toISOString() : null;
+                    onChange({ ...filters, to: iso, mode: 'ABSOLUTE' });
+                  }}
+                />
+              </label>
+            </div>
+            <p className="text-[11px] text-slate-400">
+              Selecciona un rango exacto en hora local; lo convertimos automáticamente a UTC para la consulta.
+            </p>
           </div>
         )}
         {filters.mode === 'DAILY' && (
-          <p className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 text-xs">
-            {`${formatUtcLabel(dailyRange.start.toISOString())} → ${formatUtcLabel(dailyRange.end.toISOString())}`}
-          </p>
+          <div className="space-y-1 text-xs">
+            <p className="rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2">
+              {`${formatUtcLabel(dailyRange.start.toISOString())} → ${formatUtcLabel(dailyRange.end.toISOString())}`}
+            </p>
+            <p className="text-[11px] text-slate-400">Mostrando únicamente los NOTAM activos durante el día UTC actual.</p>
+          </div>
         )}
       </div>
 

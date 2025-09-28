@@ -6,6 +6,8 @@ import type { Airport, Catalogs, Notam } from '../types/notam';
 import type { StationSuggestion } from '../components/StationSearch';
 import StationSearch from '../components/StationSearch';
 import SeverityBadge from '../components/SeverityBadge';
+import { formatUtcRangeWithSuffix } from '../utils/datetime';
+import { getNotamSummarySnippet } from '../utils/notamText';
 import { mapSeverity } from '../utils/severity';
 
 interface FavoritesViewProps {
@@ -25,24 +27,6 @@ interface FavoritesViewProps {
 }
 
 const ITEMS_PER_PAGE = 6;
-
-function formatUtcRange(start?: string | null, end?: string | null) {
-  const format = (value?: string | null) => {
-    if (!value) return '—';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return '—';
-    return `${date.toLocaleString('es-MX', {
-      timeZone: 'UTC',
-      hour12: false,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    })} UTC`;
-  };
-  return `${format(start)} → ${format(end)}`;
-}
 
 function getTimeline(notams: Notam[]) {
   const entries = notams
@@ -307,7 +291,7 @@ export function FavoritesView({
                             left: `${item.left}%`,
                             width: `${item.width}%`,
                           }}
-                          title={`${item.notam.number ?? item.notam.id} • ${formatUtcRange(item.notam.start_at, item.notam.end_at)}`}
+                          title={`${item.notam.number ?? item.notam.id} • ${formatUtcRangeWithSuffix(item.notam.start_at, item.notam.end_at)}`}
                         >
                           <span className="sr-only">{item.notam.number}</span>
                         </div>
@@ -329,7 +313,12 @@ export function FavoritesView({
                             <div>
                               <p className="text-sm font-semibold text-slate-100">{notam.number ?? notam.id}</p>
                               <p className="text-xs text-slate-400">{category?.label ?? 'Sin categoría'}</p>
-                              <p className="text-xs text-slate-400">{formatUtcRange(notam.start_at, notam.end_at)}</p>
+                              <p className="text-xs text-slate-400">
+                                {formatUtcRangeWithSuffix(notam.start_at, notam.end_at)}
+                              </p>
+                              <p className="mt-1 text-xs text-slate-300">
+                                {getNotamSummarySnippet(notam, 140) || 'Sin descripción disponible'}
+                              </p>
                             </div>
                             <div className="flex flex-col items-end gap-2">
                               <SeverityBadge value={notam.severity} />

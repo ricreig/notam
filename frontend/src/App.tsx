@@ -36,6 +36,7 @@ export default function App() {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [favorites, setFavorites] = useState<string[]>(() => loadFavorites());
   const [highlightedNotamId, setHighlightedNotamId] = useState<string | null>(null);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
 
   useEffect(() => {
     saveFavorites(favorites);
@@ -134,21 +135,49 @@ export default function App() {
       setShowGlobalLoading(true);
       return;
     }
+    if (typeof window === 'undefined') {
+      setShowGlobalLoading(false);
+      return;
+    }
     const timeout = window.setTimeout(() => setShowGlobalLoading(false), 600);
     return () => window.clearTimeout(timeout);
   }, [globalLoading]);
   const globalError = notamsError || airportsError;
+
+  useEffect(() => {
+    if (!globalLoading && !globalError) {
+      setLastUpdatedAt(new Date());
+    }
+  }, [globalLoading, globalError, notams]);
+
+  const lastUpdatedLabel = useMemo(() => {
+    if (!lastUpdatedAt) return null;
+    return lastUpdatedAt.toLocaleString('es-MX', {
+      timeZone: 'UTC',
+      hour12: false,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+  }, [lastUpdatedAt]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
       <TopBar currentView={view} onViewChange={setView} onRefresh={refetchNotams} />
       <main className="mx-auto max-w-7xl space-y-8 px-6 py-12">
         <div className="min-h-[1.5rem]">
-          {showGlobalLoading && (
+          {showGlobalLoading ? (
             <div className="flex items-center gap-2 text-sm text-slate-400" role="status" aria-live="polite">
               <span className="h-2 w-2 animate-pulse rounded-full bg-sky-400" aria-hidden="true" />
               Cargando datos…
             </div>
+          ) : lastUpdatedLabel ? (
+            <p className="text-xs text-slate-400">Última actualización: {lastUpdatedLabel} UTC</p>
+          ) : (
+            <p className="text-xs text-slate-500">Datos listos.</p>
           )}
         </div>
         {globalError && (
